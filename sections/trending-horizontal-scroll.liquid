@@ -1,0 +1,127 @@
+{{ 'section-trending-horizontal.css' | asset_url | stylesheet_tag }}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer="defer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer="defer"></script>
+
+<section class="horizontal-scroll-section" id="trending-pin-section-{{ section.id }}">
+  <div class="sticky-container">
+    <div class="title-wrapper">
+      <h2 class="section-title">{{ section.settings.heading }}</h2>
+    </div>
+
+    <div class="horizontal-track-wrapper">
+      <div class="horizontal-track">
+        {%- assign display_limit = section.settings.product_limit | default: 8 -%}
+        {%- for product in section.settings.collection.products limit: display_limit -%}
+          <div class="product-card">
+            <a href="{{ product.url }}" class="product-link">
+              <div class="product-image-wrapper">
+                {%- if product.featured_image != blank -%}
+                  <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy">
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+              <div class="product-info">
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.price | money }} USD</p>
+              </div>
+            </a>
+          </div>
+        {%- else -%}
+          {%- for i in (1..8) -%}
+            {%- assign placeholder_index = i | modulo: 4 | plus: 1 -%}
+            <div class="product-card">
+              <div class="product-image-wrapper">
+                {{ 'product-apparel-' | append: placeholder_index | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+              <div class="product-info">
+                <h3>Denim Product {{ i }}</h3>
+                <p>$4,500.00 USD</p>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  window.addEventListener("DOMContentLoaded", (event) => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = document.querySelector("#trending-pin-section-{{ section.id }}");
+    const titleWrapper = section.querySelector(".title-wrapper");
+    const track = section.querySelector(".horizontal-track");
+
+    // Calculate exact scroll distance needed for the track width
+    function getScrollAmount() {
+      return -(track.scrollWidth - window.innerWidth);
+    }
+
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "+=3500", // Controls how long the section stays pinned
+        pin: true,
+        scrub: 1, // Smoothly ties animation progress directly to user scroll wheel
+        anticipatePin: 1
+      }
+    });
+
+    // Step 1: Title flies up and fades out instantly
+    tl.to(titleWrapper, {
+      y: -100,
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.out"
+    })
+    // Step 2: Cards scale up from center seamlessly
+    .fromTo(track, 
+      { scale: 0.2, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 1, ease: "power2.out" },
+      "<"
+    )
+    // Step 3: Track moves horizontally from right to left perfectly aligned
+    .to(track, {
+      x: getScrollAmount,
+      duration: 3,
+      ease: "none"
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Trending Horizontal",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "TRENDING PRODUCTS"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "label": "Maximum products to show",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trending Horizontal"
+    }
+  ]
+}
+{% endschema %}

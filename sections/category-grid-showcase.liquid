@@ -1,0 +1,88 @@
+{{ 'section-category-grid.css' | asset_url | stylesheet_tag }}
+
+<section class="category-grid-section" id="category-section-{{ section.id }}">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <div class="section-header text-center">
+        <h2 class="category-main-title">{{ section.settings.heading }}</h2>
+      </div>
+    {%- endif -%}
+
+    <div class="category-grid-container">
+      {%- for block in section.blocks -%}
+        <div class="category-card" {{ block.shopify_attributes }}>
+          <a href="{{ block.settings.link | default: '#' }}" class="category-card-link">
+            <div class="category-image-wrapper">
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+              {%- if block.settings.badge != blank -%}
+                <span class="category-badge">{{ block.settings.badge }}</span>
+              {%- endif -%}
+            </div>
+            <div class="category-content">
+              <h3>{{ block.settings.title | default: 'Denim Category' }}</h3>
+              <span class="category-cta">Explore Now &rarr;</span>
+            </div>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Category Grid Showcase",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "EXPLORE COLLECTIONS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category_item",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title",
+          "default": "Men's Denim"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Floating Badge Text",
+          "default": "NEW"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Category Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Grid Showcase",
+      "blocks": [
+        { "type": "category_item", "settings": { "title": "Classic Jackets", "badge": "HOT" } },
+        { "type": "category_item", "settings": { "title": "Slim Fit Jeans", "badge": "SALE" } },
+        { "type": "category_item", "settings": { "title": "Oversized Shirts", "badge": "NEW" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
