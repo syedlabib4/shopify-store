@@ -1,0 +1,75 @@
+{% comment %}#component#["settings/display-settings-2","settings/container-full_width-2","settings/gap-between-content","settings/color-scheme","settings/section-padding","settings/section-margin","blocks/background","settings/design-mode"]#endcomponent#{% endcomment %}
+<style>
+    {% if block_color %}
+    {% endif %}
+    {% assign colorblock = section.blocks | where: 'type', 'color' | first %}
+{% if colorblock %}
+    #shopify-section-{{ section.id }},
+    #shopify-section-{{ section.id }} .smi-color-{{ section.settings.color_scheme }} {
+    --color-background: {{ colorblock.settings.background_color | color_extract: 'red' }}, {{ colorblock.settings.background_color | color_extract: 'green' }},{{ colorblock.settings.background_color | color_extract: 'blue' }};
+    {% if colorblock.settings.background_gradient_color == blank %}
+        --gradient-background: {{ colorblock.settings.background_color }};
+    {% else %}
+        --gradient-background: {{ colorblock.settings.background_gradient_color }};
+    {% endif %}
+    --color-foreground: {{ colorblock.settings.text_color | color_extract: 'red' }}, {{ colorblock.settings.text_color | color_extract: 'green' }},{{ colorblock.settings.text_color | color_extract: 'blue' }};
+    }
+{% endif %}
+    #shopify-section-{{ section.id }}{
+        {% if  section.settings.custom_width == true and section.settings.container_full_width == false %}
+--page-width: {{ section.settings.section_width }}px;
+{% endif %}
+        --section-padding-top: {{ section.settings.padding_top }}px;
+--section-padding-bottom: {{ section.settings.padding_bottom }}px;
+--section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+--section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+        --section-margin-sides: {{ section.settings.margin_sides }}px;
+--section-margin-sides-mobile: {{ section.settings.margin_sides_mobile }}px;
+        --gap-between-content: {{ section.settings.gap_between_content }}px;
+    }
+.section-class-name .smi-gap{gap:var(--gap-between-content, 30px)}@media screen and (max-width: 767.8px){.smi-display-settings.smi-display-desktop{display:none !important}}@media screen and (min-width: 768px){.smi-display-settings.smi-display-mobile{display:none !important}}.smi-section-scrolling-text.smi-section__inner{padding-top:0;padding-bottom:0}smi-scrolling-text{width:100%;display:flex;white-space:nowrap;overflow:hidden;padding-top:var(--section-padding-top, 0);padding-bottom:var(--section-padding-bottom, 0)}@media(max-width: 767.98px){smi-scrolling-text{padding-top:var(--section-padding-top-mobile, 0);padding-bottom:var(--section-padding-bottom-mobile, 0)}}smi-scrolling-text:hover .__smi-item.__smi-animation-run{animation-play-state:paused !important}smi-scrolling-text[border-top]{border-top:1px solid rgba(var(--color-foreground), 0.2)}smi-scrolling-text[border-bottom]{border-bottom:1px solid rgba(var(--color-foreground), 0.2)}smi-scrolling-text .__smi-item{display:flex;align-items:center}smi-scrolling-text .__smi-item__image,smi-scrolling-text .__smi-item__text{overflow:hidden}smi-scrolling-text .__smi-item__text{overflow:visible;margin-right:var(--gap-between-content)}smi-scrolling-text .__smi-item__text p:last-child{margin-bottom:0}smi-scrolling-text .__smi-item__image{line-height:0;width:calc(var(--image-width, 100px));margin-right:var(--gap-between-content)}smi-scrolling-text .__smi-item__image img,smi-scrolling-text .__smi-item__image svg{width:100%;height:auto}smi-scrolling-text .__smi-item.__smi-animation-run{animation-play-state:running !important}smi-scrolling-text .__smi-item.__smi-animation-rtl{animation:smi-marquee-rtl var(--duration, 20s) linear infinite;animation-play-state:paused}smi-scrolling-text .__smi-item.__smi-animation-ltr{animation:smi-marquee-ltr var(--duration, 20s) linear infinite;animation-play-state:paused}smi-scrolling-text .__smi-item__smi-animation-lg-item{margin-top:var(--vertical-space-lg, 24px);padding-bottom:var(--horizontal-space-xxl, 36px);line-height:var(--basieco-iteem)}smi-scrolling-text .smi-block-type-text-gutter-item{padding-left:calc(var(--horizontal-space-xxl, 48px) + 17px + max(var(--container-gutter),50% - var(--container-max-width)/2));margin-top:var(--podes-ite2m)}smi-scrolling-text .smi-outline-text{-webkit-text-stroke:1px rgb(var(--color-foreground));-webkit-text-fill-color:rgba(0,0,0,0)}@keyframes smi-marquee-rtl{0%{transform:translate(0%)}100%{transform:translate(-100%)}}@keyframes smi-marquee-ltr{0%{transform:translate(-100%)}100%{transform:translate(0%)}}
+</style>
+<div class="smi-d-none smi-pofds-itegm">&nbsp; </div>
+<div id="smi-{{ section.id }}" class="smi-{{ section.id }} smi-display-settings smi-display-{{ section.settings.display_on }} smi-section__inner smi-gradient smi-section-scrolling-text smi-color-{{ section.settings.color_scheme }}" data-section="scrolling-text-1" data-name="✧Scrolling text 1">
+    
+    {% liquid
+    assign background_block = section.blocks | where: 'type', 'background' | first
+    if background_block
+      render 'smi-background', section: section, is_reference: true
+    endif
+  %}
+    <div class="{% if section.settings.container_full_width %}smi-w-100{% else %}smi-container{% endif %}">
+        <smi-scrolling-text speed="{{ section.settings.scrolling_speed }}"
+            {%- if section.settings.show_top_divider %} border-top {%- endif %}
+            {%- if section.settings.show_bottom_divider %} border-bottom {%- endif %}>
+            <div class="__smi-item {{ section.settings.scroll_direction | prepend: '__smi-animation-' }}">
+                {% for block in section.blocks %}
+                    {% case block.type %}
+                        {% when 'image' %}
+                            <div class="__smi-item__image smi-media-wrapper
+                                {%- if block.settings.use_media_style_from_theme_settings == true %} smi-shadow smi-border{% endif -%}
+                                    {{ settings.smi_animations_hover_image | default: shop.metafields.smind.settings.value.imageHoverEffect | default: 'none' | prepend: ' smi-hover-image-' }}"
+                                style=" --image-width:{{ block.settings.image_width }}px"
+                                {{ block.shopify_attributes }}
+                            >
+                                {% if images[block.settings.image] != blank %}
+                                    {{ images[block.settings.image] | image_url: width: block.settings.image_width | image_tag: class: img_classes, widths: '200,300,400,500' }}
+                                {% else %}
+                                    {{ 'image' | placeholder_svg_tag: 'smi-placeholder-light' }}
+                                {% endif %}
+                            </div>
+                        {% when 'text' %}
+                            <div class="__smi-item__text {{ block.settings.heading_size }} {% if block.settings.outline_text %}smi-outline-text{% endif %}" {{ block.shopify_attributes }}>
+                                {{ block.settings.heading }}
+                            </div>
+                    {% endcase %}
+                {% endfor %}
+            </div>
+        </smi-scrolling-text>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+!function(){class t extends HTMLElement{constructor(){super()}static get observedAttributes(){return["speed"]}get speed(){return this.getAttribute("speed")}set speed(t){this.setAttribute("speed",t)}attributeChangedCallback(t,e,s){e!==s&&"speed"===t&&this._setDuration()}connectedCallback(){this._cloneData(),this._setDuration(),this._run()}_cloneData(){const t=this.firstElementChild;if(!t?.offsetWidth)return;const e=Math.round(this.offsetWidth/t.offsetWidth)+2;for(let s=0;s<e;s++){const e=this.firstElementChild.cloneNode(!0);e.ariaHidden="true",this.appendChild(e),t.remove()}}_setDuration(){const t=this.speed||4;let e=this.firstElementChild.offsetWidth/1e3*(10-t+1)*5,s=+(Math.round(e+"e+2")+"e-2");this.style.setProperty("--duration",s+"s")}_run(){for(const t of this.children)t.classList.add("__smi-animation-run")}}Shopify.designMode?customElements.get("smi-scrolling-text")||setTimeout((()=>{customElements.define("smi-scrolling-text",t)}),100):document.addEventListener("DOMContentLoaded",(()=>{customElements.get("smi-scrolling-text")||customElements.define("smi-scrolling-text",t)}))}();
+</script>

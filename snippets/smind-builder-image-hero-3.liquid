@@ -1,0 +1,1320 @@
+{% comment %}#component#["settings/display-settings-2","settings/container-width-new","settings/content-settings-2.schema2","settings/section-padding","settings/section-margin","settings/rating-icons","settings/heading","settings/buttons","settings/button-animation","settings/countdown-timer-new-2","settings/video.no-autoplay","settings/icon-setting","blocks/background","settings/custom-icons","settings/design-mode","settings/image.vars","settings/image","settings/animation-settings"]#endcomponent#{% endcomment %}
+{% liquid
+	assign list_blogs = section.blocks
+	case section.settings.hero_height
+        when 'adapt_to_image'
+			if section.settings.type_media == 'image'
+				assign aspect_ratio_md = images[section.settings.image].aspect_ratio | default: 1.77
+			else
+				if section.settings.video != blank
+                	assign aspect_ratio_md = section.settings.video.aspect_ratio
+				else
+					assign aspect_ratio_md = 16.0 | divided_by: 9.0
+				endif
+			endif
+			assign slide_height = '100%'
+        when 'x_small'
+            assign slide_height = '400px'
+        when 'small'
+            assign slide_height = '512px'
+        when 'medium'
+            assign slide_height = '576px'
+        when 'large'
+            assign slide_height = '672px'
+        when 'fit_screen'
+            assign slide_height = '100vh'
+    endcase
+	case section.settings.hero_height_mobile
+		when 'adapt_to_image'
+			if section.settings.type_media == 'image'
+				assign aspect_ratio_xs = images[section.settings.mobile_image_optional].aspect_ratio | default: aspect_ratio_md
+			else
+				assign aspect_ratio_xs = section.settings.mobile_video_optional.aspect_ratio | default: aspect_ratio_md
+			endif
+			assign slide_height_mobile = '100%'
+        when 'custom'
+			assign slide_height_mobile = section.settings.custom_height_mobile | append: 'px'
+        when 'fit_screen'
+            assign slide_height_mobile = '100vh'
+	endcase
+	assign block_color = section.blocks | where: 'type', 'color' | first
+    if block_color
+        assign custom_color_content = 'smi-content-color'
+    else
+        assign custom_color_content = 'smi-color-' | append: section.settings.content_color_scheme
+    endif
+	assign position_y = section.settings.desktop_content_position | split: '_' | first
+	assign position_x = section.settings.desktop_content_position | split: '_' | last
+	capture position_content
+		echo ' smi-justify-content-center smi-align-items-' | append: section.settings.mobile_content_position
+		if section.settings.desktop_content_position
+		echo ' smi-justify-content-md-' | append: position_x | append: ' smi-align-items-md-' | append: position_y
+		endif
+	endcapture
+	assign desktop_content_alignment = section.settings.desktop_content_alignment
+	if section.settings.desktop_content_alignment == 'right'
+		assign desktop_content_alignment = 'end'
+	endif
+	assign mobile_content_alignment = section.settings.mobile_content_alignment
+	if section.settings.mobile_content_alignment == 'right'
+		assign mobile_content_alignment = 'end'
+	endif
+%}
+<style>
+    {% if block_color %}
+    {% endif %}
+    {% assign block_color = section.blocks | where: 'type', 'color' | first %}
+{% if block_color %}
+    #shopify-section-{{ section.id }} .smi-color-{{ section.settings.color_scheme }}{
+        --color-background: {{ block_color.settings.background_color | color_extract: 'red' }}, {{ block_color.settings.background_color | color_extract: 'green' }},{{ block_color.settings.background_color | color_extract: 'blue' }};
+        {% if block_color.settings.background_gradient_color == blank %}
+            --gradient-background: {{ block_color.settings.background_color }};
+        {% else %}
+            --gradient-background: {{ block_color.settings.background_gradient_color }};
+        {% endif %}
+        --color-foreground: {{ block_color.settings.text_color | color_extract: 'red' }}, {{ block_color.settings.text_color | color_extract: 'green' }},{{ block_color.settings.text_color | color_extract: 'blue' }};
+        --color-shadow: {{ block_color.settings.shadow_color | color_extract: 'red' }}, {{ block_color.settings.shadow_color | color_extract: 'green' }},{{ block_color.settings.shadow_color | color_extract: 'blue' }};
+    }
+    #shopify-section-{{ section.id }} .smi-content-color {
+        --color-background: {{ block_color.settings.content_background_color | color_extract: 'red' }}, {{ block_color.settings.content_background_color | color_extract: 'green' }},{{ block_color.settings.content_background_color | color_extract: 'blue' }};
+        {% if block_color.settings.content_background_gradient_color == blank %}
+            --gradient-background: {{ block_color.settings.content_background_color }};
+        {% else %}
+            --gradient-background: {{ block_color.settings.content_background_gradient_color }};
+        {% endif %}
+		{% if block_color.settings.content_heading_color != blank and block_color.settings.content_heading_color != 'rgba(0,0,0,0)' %}
+			--color-heading: {{ block_color.settings.content_heading_color | color_extract: 'red' }}, {{ block_color.settings.content_heading_color | color_extract: 'green' }},{{ block_color.settings.content_heading_color | color_extract: 'blue' }};
+		{% endif %}	
+        --color-foreground: {{ block_color.settings.content_text_color | color_extract: 'red' }}, {{ block_color.settings.content_text_color | color_extract: 'green' }},{{ block_color.settings.content_text_color | color_extract: 'blue' }};
+        --color-subtext: {{ block_color.settings.content_subtext_color | color_extract: 'red' }},{{ block_color.settings.content_subtext_color | color_extract: 'green' }},{{ block_color.settings.content_subtext_color | color_extract: 'blue' }};
+		--color-text-link: {{ block_color.settings.content_link_color | color_extract: 'red' }}, {{ block_color.settings.content_link_color | color_extract: 'green' }},{{ block_color.settings.content_link_color | color_extract: 'blue' }};
+		{% if block_color.settings.content_hover_link_color != blank and block_color.settings.content_hover_link_color != 'rgba(0,0,0,0)' %}
+			--color-hover-link: {{ block_color.settings.content_hover_link_color | color_extract: 'red' }}, {{ block_color.settings.content_hover_link_color | color_extract: 'green' }},{{ block_color.settings.content_hover_link_color | color_extract: 'blue' }};
+		{% else %}
+			--color-hover-link: {{ block_color.settings.content_link_color | color_extract: 'red' }}, {{ block_color.settings.content_link_color | color_extract: 'green' }},{{ block_color.settings.content_link_color | color_extract: 'blue' }};
+		{% endif %}	
+		--color-shadow: {{ block_color.settings.content_shadow_color | color_extract: 'red' }}, {{ block_color.settings.content_shadow_color | color_extract: 'green' }},{{ block_color.settings.content_shadow_color | color_extract: 'blue' }};
+        --color-button: {{ block_color.settings.content_solid_background_button_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_background_button_color | color_extract: 'green' }},{{ block_color.settings.content_solid_background_button_color | color_extract: 'blue' }};
+        --color-button-text: {{ block_color.settings.content_solid_button_label_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_button_label_color | color_extract: 'green' }},{{ block_color.settings.content_solid_button_label_color | color_extract: 'blue' }};
+		{% if block_color.settings.content_solid_background_button_hover_color != blank and block_color.settings.content_solid_background_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover: {{ block_color.settings.content_solid_background_button_hover_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_background_button_hover_color | color_extract: 'green' }},{{ block_color.settings.content_solid_background_button_hover_color | color_extract: 'blue' }};
+		{% else %}
+			--color-button-hover: {{ block_color.settings.content_solid_background_button_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_background_button_color | color_extract: 'green' }},{{ block_color.settings.content_solid_background_button_color | color_extract: 'blue' }};
+		{% endif %}		
+		{% if block_color.settings.content_solid_button_label_hover_color != blank and block_color.settings.content_solid_button_label_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-text: {{ block_color.settings.content_solid_button_label_hover_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_button_label_hover_color | color_extract: 'green' }},{{ block_color.settings.content_solid_button_label_hover_color | color_extract: 'blue' }};
+		{% else %}
+			--color-button-hover-text: {{ block_color.settings.content_solid_button_label_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_button_label_color | color_extract: 'green' }},{{ block_color.settings.content_solid_button_label_color | color_extract: 'blue' }};
+		{% endif %}
+        --color-secondary-button-text: {{ block_color.settings.content_outline_button_color | color_extract: 'red' }}, {{ block_color.settings.content_outline_button_color | color_extract: 'green' }},{{ block_color.settings.content_outline_button_color | color_extract: 'blue' }};
+        {% if block_color.settings.content_outline_button_hover_color != blank and block_color.settings.content_outline_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-border: {{ block_color.settings.content_outline_button_hover_color | color_extract: 'red' }}, {{ block_color.settings.content_outline_button_hover_color | color_extract: 'green' }},{{ block_color.settings.content_outline_button_hover_color | color_extract: 'blue' }};
+		{% else %}
+			--color-button-hover-border: {{ block_color.settings.content_outline_button_color | color_extract: 'red' }}, {{ block_color.settings.content_outline_button_color | color_extract: 'green' }},{{ block_color.settings.content_outline_button_color | color_extract: 'blue' }};
+		{% endif %}
+    }
+{% endif %}
+    #shopify-section-{{ section.id }} {
+        --section-padding-top: {{ section.settings.padding_top }}px;
+--section-padding-bottom: {{ section.settings.padding_bottom }}px;
+--section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+--section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+		{% assign countdownBlock = section.blocks | where: 'type', 'countdown_timer' | first %}
+{% assign announcement = section.blocks | where: 'type', 'announcement-2' | first %}
+{% if countdownBlock or announcement %}
+    {% if countdownBlock.settings.number_size == 'smi-h1' or announcement.settings.number_size == 'smi-h1' %}
+        --unit-size: var(--h1-font-size);
+        --unit-size-min: 22px;
+        --unit-line-height: 22;
+        --unit-line-height-min: 22;
+		--min-width-num: 58px;
+		@media screen and (max-width: 768px) {
+			--min-width-num: 32px;
+		}
+    {% elsif countdownBlock.settings.number_size == 'smi-h2' or announcement.settings.number_size == 'smi-h2' %}
+        --unit-size: var(--h2-font-size);
+        --unit-size-min: 20px;
+        --unit-line-height: 20;
+        --unit-line-height-min: 20;
+		--min-width-num: 48px;
+		@media screen and (max-width: 768px) {
+			--min-width-num: 30px;
+		}
+    {% elsif countdownBlock.settings.number_size == 'smi-h3' or announcement.settings.number_size == 'smi-h3' %}
+        --unit-size: var(--h3-font-size);
+        --unit-size-min: 18px;
+        --unit-line-height: 18;
+        --unit-line-height-min: 18;
+		--min-width-num: 35px;
+		@media screen and (max-width: 768px) {
+			--min-width-num: 28px;
+		}
+    {% elsif countdownBlock.settings.number_size == 'smi-h4' or announcement.settings.number_size == 'smi-h4' %}
+        --unit-size: var(--h4-font-size);
+        --unit-size-min: 16px;
+        --unit-line-height: 16;
+        --unit-line-height-min: 16;
+		--min-width-num: 27px;
+		@media screen and (max-width: 768px) {
+			--min-width-num: 26px;
+		}
+    {% endif %}
+	{% if countdownBlock.settings.font_type == 'body' or announcement.settings.font_type == 'body' %}
+        --unit-size: 16px;
+        --unit-size-min: 16px;
+        --unit-line-height: 22;
+        --unit-line-height-min: 22;
+		--min-width-num: 27px;
+		@media screen and (max-width: 768px) {
+			--min-width-num: 26px;
+		}
+	{% endif %}
+    .smi-rich-content-40{
+        {% if countdownBlock.settings.number_size == 'smi-h1' or announcement.settings.number_size == 'smi-h1' %}
+            --unit-size: var(--h1-font-size);
+            --unit-size-min: 20px;
+            --unit-line-height: 20;
+            --unit-line-height-min: 20;
+        {% elsif countdownBlock.settings.number_size == 'smi-h2' or announcement.settings.number_size == 'smi-h2' %}
+            --unit-size: var(--h2-font-size);
+            --unit-size-min: 18px;
+            --unit-line-height: 18;
+            --unit-line-height-min: 18;
+        {% elsif countdownBlock.settings.number_size == 'smi-h3' or announcement.settings.number_size == 'smi-h3' %}
+            --unit-size: var(--h3-font-size);
+            --unit-size-min: 16px;
+            --unit-line-height: 16;
+            --unit-line-height-min: 16;
+        {% elsif countdownBlock.settings.number_size == 'smi-h4' or announcement.settings.number_size == 'smi-h4' %}
+            --unit-size: var(--h4-font-size);
+            --unit-size-min: 14px;
+            --unit-line-height: 14;
+            --unit-line-height-min: 14;
+        {% endif %}
+		{% if countdownBlock.settings.font_type == 'body' or announcement.settings.font_type == 'body' %}
+			--unit-size: 16px;
+			--unit-size-min: 16px;
+			--unit-line-height: 22;
+			--unit-line-height-min: 22;
+			--min-width-num: 27px;
+			@media screen and (max-width: 768px) {
+				--min-width-num: 26px;
+			}
+		{% endif %}
+    }
+{% endif %}
+		--section-margin-sides: {{ section.settings.margin_sides }}px;
+--section-margin-sides-mobile: {{ section.settings.margin_sides_mobile }}px;
+		{% if  section.settings.custom_width == true and section.settings.full_width == 'container' %}
+--page-width: {{ section.settings.section_width }}px;
+{% endif %}
+		--content-max-width: {{ section.settings.content_max_width }}px;
+        --content-background-opacity: {{ section.settings.content_background_opacity | divided_by: 100.0 }};
+		--content-alignment: {{ desktop_content_alignment }};
+        --image-overlay: {{ section.settings.image_overlay }};
+        --slide-height: {{ slide_height }};
+		--left-right-padding: {{ section.settings.left_right_padding_desktop }}px;
+		--top-bottom-padding: {{ section.settings.top_bottom_padding_desktop }}px;
+		{% if section.settings.custom_gap == true %}
+			--grid-desktop-vertical-spacing: {{ section.settings.item_gap }}px;
+			--grid-mobile-vertical-spacing: {{ section.settings.item_gap }}px;
+		{% endif %}
+    }
+	#shopify-section-{{ section.id }} .smi-image-hero-wrapper.smi-adapt-image-desktop {
+			--slide-height: calc(var(--hero-bg-width)/{{ aspect_ratio_md }})
+		}
+	#shopify-section-{{ section.id }} .smi-heading-component {
+		--heading-alignment: {{ desktop_content_alignment }} !important;
+	}
+	@media(max-width:1440px) {
+		#shopify-section-{{ section.id }} {
+			{% if section.settings.left_right_padding_desktop > 60 %}
+				--left-right-padding: 60px;
+			{% endif %}
+			{% if section.settings.top_bottom_padding_desktop > 60 %}
+				--top-bottom-padding: 60px;
+			{% endif %}
+		} 
+	}
+	@media(max-width:767px) {
+		#shopify-section-{{ section.id }} {
+			--slide-height: {{ slide_height_mobile }};
+			--left-right-padding: {{ section.settings.left_right_padding_mobile }}px;
+			--top-bottom-padding: {{ section.settings.top_bottom_padding_mobile }}px;
+			--content-alignment: {{ mobile_content_alignment }};
+    		--heading-alignment: {{ mobile_content_alignment }};
+		}
+		#shopify-section-{{ section.id }} .smi-image-hero-wrapper.smi-adapt-image-mobile {
+			--slide-height: calc(var(--hero-bg-width)/{{ aspect_ratio_xs }})
+		}
+		#shopify-section-{{ section.id }} .smi-heading-component {
+		--heading-alignment: {{ mobile_content_alignment }} !important;
+		}
+	}
+@media screen and (max-width: 767.8px){.smi-display-settings.smi-display-desktop{display:none !important}}@media screen and (min-width: 768px){.smi-display-settings.smi-display-mobile{display:none !important}}.smi-component-rating-icons-wrapper{display:flex}.smi-component-rating-icons-wrapper .smi-component-rating-icons{display:flex;width:fit-content;flex-direction:var(--content-direction)}.smi-component-rating-icons-wrapper .smi-component-rating-icons.smi-has-background{padding:calc(6px*var(--padding_scale)) calc(12px*var(--padding_scale));border:var(--border-thickness) solid rgba(var(--thickness-color), var(--thickness-opacity));border-radius:var(--borner-radius);background:rgba(var(--icon-background), var(--icon-background-opacity))}.smi-component-rating-icons-wrapper .smi-component-rating-icons .smi-rating-icons-wrapper{display:flex}.smi-component-rating-icons-wrapper .smi-component-rating-icons .smi-rating-icons-wrapper .smi-rating-icons{gap:var(--icon-gap)}.smi-component-rating-icons-wrapper .smi-component-rating-icons .smi-rating-icons-wrapper .smi-rating-icons span{display:flex}.smi-component-rating-icons-wrapper .smi-component-rating-icons .smi-rating-icons-wrapper .smi-rating-icons span svg{width:var(--icon-size);height:auto}.smi-component-rating-icons-wrapper .smi-component-rating-icons .smi-rating-icons-wrapper img{width:var(--image-width);height:auto;object-fit:contain}.smi-component-rating-icons-wrapper .smi-component-rating-icons .smi-rating-text.smi-custom-text-color{color:rgba(var(--text-color), 1)}.smi-bounceIn,.smi-tada,.smi-headShake,.smi-shakeY,.smi-shakeX,.smi-flash{animation-duration:2s;animation-delay:1s;animation-iteration-count:infinite}.smi-bounceIn:hover,.smi-tada:hover,.smi-headShake:hover,.smi-shakeY:hover,.smi-shakeX:hover,.smi-flash:hover{animation:none}@keyframes smi-flash{from,50%,to{opacity:1}25%,75%{opacity:0}}.smi-flash{animation-name:smi-flash;animation-iteration-count:infinite}@keyframes smi-shakeX{from,to{transform:translate3d(0, 0, 0)}10%,30%,50%,70%,90%{transform:translate3d(-10px, 0, 0)}20%,40%,60%,80%{transform:translate3d(10px, 0, 0)}}.smi-shakeX{animation-name:smi-shakeX}@keyframes smi-shakeY{from,to{transform:translate3d(0, 0, 0)}10%,30%,50%,70%,90%{transform:translate3d(0, -10px, 0)}20%,40%,60%,80%{transform:translate3d(0, 10px, 0)}}.smi-shakeY{animation-name:smi-shakeY;animation-iteration-count:infinite}@keyframes smi-headShake{0%{transform:translateX(0)}6.5%{transform:translateX(-6px) rotateY(-9deg)}18.5%{transform:translateX(5px) rotateY(7deg)}31.5%{transform:translateX(-3px) rotateY(-5deg)}43.5%{transform:translateX(2px) rotateY(3deg)}50%{transform:translateX(0)}}.smi-headShake{animation-timing-function:ease-in-out;animation-name:smi-headShake}@keyframes smi-tada{from{transform:scale3d(1, 1, 1)}10%,20%{transform:scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg)}30%,50%,70%,90%{transform:scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)}40%,60%,80%{transform:scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)}to{transform:scale3d(1, 1, 1)}}.smi-tada{animation-name:smi-tada}@keyframes smiBounceIn{from,20%,40%,60%,80%,to{animation-timing-function:cubic-bezier(0.215, 0.61, 0.355, 1)}0%{opacity:0;transform:scale3d(0.3, 0.3, 0.3)}20%{transform:scale3d(1.1, 1.1, 1.1)}40%{transform:scale3d(0.9, 0.9, 0.9)}60%{opacity:1;transform:scale3d(1.03, 1.03, 1.03)}80%{transform:scale3d(0.97, 0.97, 0.97)}to{opacity:1;transform:scale3d(1, 1, 1)}}.smi-bounceIn{animation-name:smiBounceIn}.smi-countdown-timer-container{white-space:nowrap;justify-content:var(--content-alignment)}.smi-countdown-timer-container .smi-mgs-noti{white-space:normal;text-align:var(--content-alignment);padding:0px !important}.smi-countdown-timer-container .smi-mgs-noti p{white-space:nowrap}.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-countdown-style-main{padding:4px 12px}@media screen and (max-width: 768px){.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-countdown-style-main{padding:2px 4px;column-gap:4px}.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-countdown-style-main .smi-num-size{font-size:clamp(var(--font-heading-scale)*.75*var(--unit-size-min),2.5cqw,var(--font-heading-scale)*.7*var(--unit-size)*1px)}.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-countdown-style-main .smi-num-size-body{font-size:calc(var(--font-body-scale)*16px)}}.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-inner-countdown{column-gap:2px}.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-inner-countdown .smi-num{min-width:var(--min-width-num);text-align:center}.smi-countdown-timer-container.smi-countdown-timer-container-style-text .smi-button-wrapper{border:var(--border-width) solid rgba(var(--color-foreground), var(--border-opacity))}.smi-countdown-timer-container .smi-inner-circular{position:relative;display:flex;align-items:center;justify-content:center;width:140px !important;height:140px !important;width:var(--circle-size) !important;height:var(--circle-size) !important}.smi-countdown-timer-container .smi-inner-circular.smi-h1-size{--circle-size: 140px}.smi-countdown-timer-container .smi-inner-circular.smi-h2-size{--circle-size: 130px}.smi-countdown-timer-container .smi-inner-circular.smi-h3-size{--circle-size: 120px}.smi-countdown-timer-container .smi-inner-circular.smi-h4-size{--circle-size: 110px}.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size{--circle-size: 90px}@media screen and (max-width: 992px){.smi-countdown-timer-container .smi-inner-circular.smi-h1-size{--circle-size: 98px}.smi-countdown-timer-container .smi-inner-circular.smi-h2-size{--circle-size: 91px}.smi-countdown-timer-container .smi-inner-circular.smi-h3-size{--circle-size: 84px}.smi-countdown-timer-container .smi-inner-circular.smi-h4-size{--circle-size: 77px}.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size{--circle-size: 77px}}@media screen and (max-width: 576px){.smi-countdown-timer-container .smi-inner-circular.smi-h1-size{--circle-size: 84px}.smi-countdown-timer-container .smi-inner-circular.smi-h2-size{--circle-size: 78px}.smi-countdown-timer-container .smi-inner-circular.smi-h3-size{--circle-size: 72px}.smi-countdown-timer-container .smi-inner-circular.smi-h4-size{--circle-size: 66px}.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size{--circle-size: 70px}}.smi-countdown-timer-container .smi-inner-circular .smi-inner-countdown{position:relative !important}.smi-countdown-timer-container .smi-inner-circular .smi-inner-countdown .smi-num-size{line-height:1 !important}.smi-countdown-timer-container .smi-inner-circular .circle{max-width:unset;--scale: clamp(0.8, 1, 1.2);transform:rotate(-90deg) scale(var(--scale));position:absolute}@media screen and (max-width: 992px){.smi-countdown-timer-container .smi-inner-circular .circle{--scale: clamp(0.6, 0.7, 1)}}@media screen and (max-width: 576px){.smi-countdown-timer-container .smi-inner-circular .circle{--scale: clamp(0.4, 0.6, 0.8)}}.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size .circle{--scale: 1.05}@media screen and (max-width: 992px){.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size .circle{--scale: clamp(0.6, 0.9, 1)}}@media screen and (max-width: 576px){.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size .circle{--scale: clamp(0.6, 0.8, 1)}}.smi-countdown-timer-container .smi-inner-circular circle{fill:none;stroke-width:8}.smi-countdown-timer-container .smi-inner-circular.smi-text-md-size circle{stroke-width:6 !important}.smi-countdown-timer-container .smi-inner-circular circle.bg{stroke:rgba(var(--color-foreground), 0.2)}.smi-countdown-timer-container .smi-inner-circular circle.progress{stroke:rgba(var(--color-foreground), 1);stroke-dasharray:var(--pir);stroke-dashoffset:0;transition:stroke-dashoffset 1s linear}.smi-countdown-timer-container .smi-inner-circular .pronon{transition:none !important}.smi-countdown-timer-container .smi-inner-circular .smi-inner-countdown{position:absolute}.smi-countdown-timer-container .smi-countdown-style-solid_1_radius.smi-countdown-main-size-smi-h1 .smi-num,.smi-countdown-timer-container .smi-countdown-style-solid_1.smi-countdown-main-size-smi-h1 .smi-num{width:clamp(var(--font-heading-scale)*50px,6vw,var(--font-heading-scale)*100px)}.smi-countdown-timer-container .smi-countdown-style-solid_1_radius.smi-countdown-main-size-smi-h2 .smi-num,.smi-countdown-timer-container .smi-countdown-style-solid_1.smi-countdown-main-size-smi-h2 .smi-num{width:clamp(var(--font-heading-scale)*45px,6vw,var(--font-heading-scale)*80px)}.smi-countdown-timer-container .smi-countdown-style-solid_1_radius.smi-countdown-main-size-smi-h3 .smi-num,.smi-countdown-timer-container .smi-countdown-style-solid_1.smi-countdown-main-size-smi-h3 .smi-num{width:clamp(var(--font-heading-scale)*40px,6vw,var(--font-heading-scale)*70px)}.smi-countdown-timer-container .smi-countdown-style-solid_1_radius.smi-countdown-main-size-smi-h4 .smi-num,.smi-countdown-timer-container .smi-countdown-style-solid_1.smi-countdown-main-size-smi-h4 .smi-num{width:clamp(var(--font-heading-scale)*35px,6vw,var(--font-heading-scale)*60px)}.smi-countdown-timer-container .smi-countdown-style-solid_1_radius.smi-countdown-main-size-smi-text-md .smi-num,.smi-countdown-timer-container .smi-countdown-style-solid_1.smi-countdown-main-size-smi-text-md .smi-num{width:calc(var(--font-body-scale)*40px)}.smi-countdown-timer-container .smi-countdown-style-solid_2_radius .smi-num-unit,.smi-countdown-timer-container .smi-countdown-style-solid_2 .smi-num-unit{padding-left:0 !important;padding-right:0 !important}.smi-countdown-timer-container .smi-countdown-style-solid_2_radius.smi-countdown-main-size-smi-h1 .smi-num-unit,.smi-countdown-timer-container .smi-countdown-style-solid_2.smi-countdown-main-size-smi-h1 .smi-num-unit{width:clamp(var(--font-heading-scale)*26px,6vw,var(--font-heading-scale)*48px)}.smi-countdown-timer-container .smi-countdown-style-solid_2_radius.smi-countdown-main-size-smi-h2 .smi-num-unit,.smi-countdown-timer-container .smi-countdown-style-solid_2.smi-countdown-main-size-smi-h2 .smi-num-unit{width:clamp(var(--font-heading-scale)*24px,6vw,var(--font-heading-scale)*40px)}.smi-countdown-timer-container .smi-countdown-style-solid_2_radius.smi-countdown-main-size-smi-h3 .smi-num-unit,.smi-countdown-timer-container .smi-countdown-style-solid_2.smi-countdown-main-size-smi-h3 .smi-num-unit{width:clamp(var(--font-heading-scale)*22px,6vw,var(--font-heading-scale)*36px)}.smi-countdown-timer-container .smi-countdown-style-solid_2_radius.smi-countdown-main-size-smi-h4 .smi-num-unit,.smi-countdown-timer-container .smi-countdown-style-solid_2.smi-countdown-main-size-smi-h4 .smi-num-unit{width:clamp(var(--font-heading-scale)*20px,6vw,var(--font-heading-scale)*32px)}.smi-countdown-timer-container .smi-countdown-style-solid_2_radius.smi-countdown-main-size-smi-text-md .smi-num-unit,.smi-countdown-timer-container .smi-countdown-style-solid_2.smi-countdown-main-size-smi-text-md .smi-num-unit{width:calc(var(--font-body-scale)*26px);height:calc(var(--font-body-scale)*30px);display:flex;align-items:center;justify-content:center}.smi-countdown-timer-container .smi-num-size{font-size:clamp(var(--font-heading-scale)*var(--unit-size-min),2.5cqw,var(--font-heading-scale)*var(--unit-size)*1px);line-height:clamp((1 + .6/(var(--font-heading-scale)*var(--unit-line-height-min)/16))*var(--heading-line-height-scale, 1),5cqw,(1 + .6/(var(--font-heading-scale)*var(--unit-line-height)/16))*var(--heading-line-height-scale, 1))}.smi-countdown-timer-container .smi-num-size-body{font-size:calc(var(--font-body-scale)*16px);line-height:calc(var(--font-body-scale)*22px)}.smi-countdown-timer-container .smi-inner{width:fit-content;text-align:center}.smi-countdown-timer-container .smi-inner .smi-text-md{font-size:clamp(var(--font-body-scale)*12px,1.5cqw,var(--font-body-scale)*16px);line-height:clamp((1 + .6/(var(--font-body-scale)*12/16))*var(--body-line-height-scale, 1),2cqw,(1 + .6/(var(--font-body-scale)*16/16))*var(--body-line-height-scale, 1))}.smi-countdown-timer-container .smi-inner .smi-unit{width:clamp(50px,5cqw,65px)}.smi-countdown-timer-container .smi-px-lg{padding-left:clamp(12px,2cqw,24px);padding-right:clamp(12px,2cqw,24px)}.smi-countdown-timer-container .smi-px-xs{padding-left:clamp(4px,1.5cqw,8px);padding-right:clamp(4px,1.5cqw,8px)}.smi-countdown-timer-container .smi-py-xxs{padding-top:clamp(1px,1cqw,4px);padding-bottom:clamp(1px,1cqw,4px)}.smi-countdown-timer-container .smi-column-gap-lg{column-gap:clamp(12px,2cqw,24px)}.smi-countdown-timer-container .smi-column-gap-md{column-gap:clamp(4px,1cqw,16px)}.smi-countdown-timer-container .smi-column-gap-xxs{column-gap:clamp(1px,.5cqw,4px)}.smi-countdown-timer-container .smi-countdown-style-main{width:fit-content}.smi-countdown-timer-container .smi-countdown-style-main .smi-num,.smi-countdown-timer-container .smi-countdown-style-main .smi-colon{font-family:var(--number-font) !important;font-weight:var(--number-font-weight) !important;font-style:var(--number-font-style) !important}.smi-countdown-timer-container .smi-countdown-style-main.smi-countdown-style-text .smi-inner-countdown,.smi-countdown-timer-container .smi-countdown-style-main.smi-countdown-style-text .smi-colon{font-family:var(--number-font) !important;font-weight:var(--number-font-weight) !important;font-style:var(--number-font-style) !important}.smi-countdown-timer-container .smi-countdown-style-main.smi-button--solid.smi-custom-countdown-style-false{border-color:rgb(var(--color-button)) !important}.smi-countdown-timer-container .smi-countdown-style-classic_2 .smi-colon,.smi-countdown-timer-container .smi-countdown-style-border .smi-colon,.smi-countdown-timer-container .smi-countdown-style-border_radius .smi-colon{font-size:.1px;color:rgba(0,0,0,0);height:auto;background:rgba(var(--color-foreground), 0.2);width:1px}.smi-countdown-timer-container .smi-countdown-style-classic_2:not(.smi-countdown-style-classic_2),.smi-countdown-timer-container .smi-countdown-style-border:not(.smi-countdown-style-classic_2),.smi-countdown-timer-container .smi-countdown-style-border_radius:not(.smi-countdown-style-classic_2){border:1px solid rgba(var(--color-foreground), 0.2)}.smi-countdown-timer-container .smi-countdown-style-classic_2:not(.smi-countdown-style-classic_2) .smi-px-lg,.smi-countdown-timer-container .smi-countdown-style-border:not(.smi-countdown-style-classic_2) .smi-px-lg,.smi-countdown-timer-container .smi-countdown-style-border_radius:not(.smi-countdown-style-classic_2) .smi-px-lg{padding-left:clamp(10px,2cqw,22px);padding-right:clamp(10px,2cqw,22px)}.smi-countdown-timer-container .smi-countdown-style-classic_2:not(.smi-countdown-style-classic_2) .smi-py-xs,.smi-countdown-timer-container .smi-countdown-style-border:not(.smi-countdown-style-classic_2) .smi-py-xs,.smi-countdown-timer-container .smi-countdown-style-border_radius:not(.smi-countdown-style-classic_2) .smi-py-xs{padding-top:clamp(4px,1cqw,8px);padding-bottom:clamp(4px,1cqw,8px)}.smi-countdown-timer-container .smi-countdown-style-classic_2:not(.smi-countdown-style-classic_2):not(.smi-countdown-style-border),.smi-countdown-timer-container .smi-countdown-style-border:not(.smi-countdown-style-classic_2):not(.smi-countdown-style-border),.smi-countdown-timer-container .smi-countdown-style-border_radius:not(.smi-countdown-style-classic_2):not(.smi-countdown-style-border){border-radius:10px}.smi-countdown-timer-container .smi-countdown-style-solid_1 .smi-px-md,.smi-countdown-timer-container .smi-countdown-style-solid_1_radius .smi-px-md{padding-left:clamp(6px,2cqw,16px);padding-right:clamp(6px,2cqw,16px)}.smi-countdown-timer-container .smi-countdown-style-solid_1 .smi-py-sm,.smi-countdown-timer-container .smi-countdown-style-solid_1_radius .smi-py-sm{padding-top:clamp(4px,1cqw,12px);padding-bottom:clamp(4px,1cqw,12px)}.smi-countdown-timer-container .smi-countdown-style-solid_1 .smi-num,.smi-countdown-timer-container .smi-countdown-style-solid_1_radius .smi-num{color:rgba(var(--color-button-text), 1);background:rgba(var(--color-button))}.smi-countdown-timer-container .smi-countdown-style-solid_1_radius:not(.smi-countdown-style-border) .smi-num{border-radius:10px}.smi-countdown-timer-container .smi-num-unit{color:rgba(var(--color-button-text), 1);background:rgba(var(--color-button))}.smi-countdown-timer-container .smi-num-unit__border{border-radius:10px}.smi-countdown-timer-container .smi-hide-op-im{display:none !important}.smi-component-settings-icon-setting{display:inline-flex}.smi-component-settings-icon-setting svg{stroke:rgb(var(--color-foreground))}.smi-component-settings-icon-setting svg path{fill:rgb(var(--color-foreground))}.smi-section-image-hero-3{position:relative}.smi-section-image-hero-3 .smi-slide-content{position:relative}.smi-section-image-hero-3 .smi-image-hero-wrapper{position:relative;min-height:var(--slide-height);padding:var(--top-bottom-padding) var(--left-right-padding);overflow:hidden}.smi-section-image-hero-3 .smi-image-hero-content{position:relative;display:flex;flex-direction:column;width:var(--content-max-width);max-width:100%;row-gap:var(--grid-desktop-vertical-spacing);z-index:1;background:rgba(0,0,0,0) !important;background-color:rgba(0,0,0,0) !important;color:rgba(var(--color-foreground), 1) !important}@media screen and (max-width: 767.8px){.smi-section-image-hero-3 .smi-image-hero-content{row-gap:var(--grid-mobile-vertical-spacing)}}.smi-section-image-hero-3 .smi-hero-background{height:100%;overflow:hidden}.smi-section-image-hero-3 .smi-hero-background:before{content:"";position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;background:var(--image-overlay)}.smi-section-image-hero-3 .smi-hero-background:not(:has(smi-video)) .smi-video-snippets{display:none}.smi-section-image-hero-3 .smi-hero-background picture>img,.smi-section-image-hero-3 .smi-hero-background picture>svg{object-fit:cover;width:100%;height:100%}.smi-section-image-hero-3 .smi-hero-background .smi-video-snippets .smi-volume-control{top:unset;left:unset;bottom:16px;right:16px}.smi-section-image-hero-3 .smi-hero-background .simpleParallax{height:100%}.smi-section-image-hero-3 .smi-social-proof{display:flex;flex-wrap:wrap;gap:12px;text-align:var(--content-alignment)}.smi-section-image-hero-3 .smi-social-proof.smi-horizontal{align-items:center;justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-social-proof.smi-vertical{flex-direction:column;align-items:var(--content-alignment)}.smi-section-image-hero-3 .smi-social-proof .smi-avatar-wrapper{display:inline-flex;flex:none}.smi-section-image-hero-3 .smi-social-proof .smi-avatar-wrapper .smi-avatar{width:var(--avatar-size, 30px);height:var(--avatar-size, 30px);object-fit:cover;border-radius:50%;border:2px solid #fff}.smi-section-image-hero-3 .smi-social-proof .smi-avatar-wrapper .smi-avatar:not(:first-child){margin-inline-start:-6px}.smi-section-image-hero-3 .smi-button-container{display:flex;justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-rating_icons .smi-component-rating-icons-wrapper{justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-heading .smi-heading-component .smi-heading-inner{width:100%;max-width:100%;margin-bottom:0}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-countdown-timer-container{display:flex;justify-content:var(--content-alignment) !important}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-countdown-timer-container .smi-countdown-style-solid_1 .smi-num,.smi-section-image-hero-3 .smi-block-countdown_timer .smi-countdown-timer-container .smi-countdown-style-solid_1_radius .smi-num{color:rgba(var(--color-button-text), 1)}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular{position:relative;display:flex;align-items:center;justify-content:center;width:var(--circle-size) !important;height:var(--circle-size) !important}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h1-size{--circle-size: 112px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h2-size{--circle-size: 104px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h3-size{--circle-size: 96px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h4-size{--circle-size: 88px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-text-md-size{--circle-size: 90px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular .smi-inner-countdown{scale:.8}@media screen and (max-width: 576px){.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h1-size{--circle-size: 63px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h2-size{--circle-size: 59px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h3-size{--circle-size: 54px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-h4-size{--circle-size: 52px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-text-md-size{--circle-size: 70px}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular .smi-inner-countdown{scale:.8}}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular .circle{--scale: clamp(0.5, 0.8, 1.2);transform:rotate(-90deg) scale(var(--scale))}@media screen and (max-width: 576px){.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular .circle{--scale: clamp(0.4, 0.45, 0.8)}}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-text-md-size .smi-inner-countdown{scale:1 !important}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-text-md-size .circle{--scale: 1.1;transform:rotate(-90deg) scale(var(--scale))}@media screen and (max-width: 992px){.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-text-md-size .circle{--scale: clamp(0.6, 0.9, 1)}}@media screen and (max-width: 576px){.smi-section-image-hero-3 .smi-block-countdown_timer .smi-inner-circular.smi-text-md-size .circle{--scale: clamp(0.6, 0.8, 1)}}.smi-section-image-hero-3 .smi-block-countdown_timer .smi-expired-message{text-align:var(--content-alignment) !important}.smi-section-image-hero-3 .smi-block-promo_code{display:flex;justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-promo_code .smi-pro-code-wrapper{display:flex;flex-direction:column;align-items:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-promo_code .smi-pro-code-wrapper .smi-description{text-align:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper{border:none;width:100%}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-content-copy{flex:1 auto;justify-content:start;border-radius:var(--border-radius) 0 0 var(--border-radius);color:rgba(var(--color-foreground), 1);border:var(--border-width) solid rgba(var(--color-foreground), var(--border-opacity));border-right:0;cursor:auto;height:100%}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-button-copy{flex:none;height:100%;padding:calc(10px*var(--buttons-scale, 1)) calc(32px*var(--buttons-scale, 1));border-radius:0 var(--border-radius) var(--border-radius) 0;border:var(--border-width) solid rgba(var(--color-button));border-left:0;position:relative;cursor:pointer}@media screen and (max-width: 767.8px){.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-button-copy{padding:calc(10px*var(--buttons-scale, 1)) calc(12px*var(--buttons-scale, 1))}}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-button-copy:hover .tooltiptext{visibility:visible;opacity:1}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-button-copy svg{width:calc(20px*var(--icon-scale, 1));height:calc(20px*var(--icon-scale, 1))}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-button-copy .tooltiptext{visibility:hidden;width:max-content;background-color:#000;color:#fff;text-align:center;border-radius:6px;padding:5px 12px;position:absolute;z-index:3;top:-45px;right:50%;transform:translateX(50%);opacity:0;transition:opacity .3s;text-transform:none}.smi-section-image-hero-3 .smi-block-promo_code .smi-button-wrapper .smi-button-copy .tooltiptext:after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border-width:5px;border-style:solid;border-color:#000 rgba(0,0,0,0) rgba(0,0,0,0) rgba(0,0,0,0)}.smi-section-image-hero-3 .smi-block-badge .smi-list-badges-wrapper{display:flex;flex-wrap:wrap;align-items:center;gap:var(--badge-item-gap);justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-badge .smi-list-badges-wrapper .smi-badge-item{display:flex;align-items:center;flex-wrap:nowrap;gap:4px;padding:calc(6px*var(--padding-scale)) calc(10px*var(--padding-scale));border-radius:var(--badge-corner-radius);box-shadow:var(--badge-shadow-horizontal-offset) var(--badge-shadow-vertical-offset) var(--badge-shadow-blur-radius) rgba(var(--color-shadow), var(--badge-shadow-opacity))}.smi-section-image-hero-3 .smi-block-badge .smi-list-badges-wrapper .smi-badge-item .smi-badge-icon{display:flex;width:calc(var(--icon-size)*var(--icon-scale, 1));height:calc(var(--icon-size)*var(--icon-scale, 1))}.smi-section-image-hero-3 .smi-block-badge .smi-list-badges-wrapper .smi-badge-item .smi-badge-icon svg,.smi-section-image-hero-3 .smi-block-badge .smi-list-badges-wrapper .smi-badge-item .smi-badge-icon img{width:100%;height:100%;object-fit:cover}.smi-section-image-hero-3 .smi-block-badge .smi-list-badges-wrapper .smi-badge-item .smi-label{color:rgba(var(--color-foreground), 1);font-size:calc(var(--font-body-scale)*var(--label-size))}.smi-section-image-hero-3 .smi-block-features_list .smi-list-features-wrapper{display:flex;flex-direction:column;gap:var(--feature-item-gap);align-items:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-features_list .smi-feature-item{display:flex;align-items:center;gap:12px}.smi-section-image-hero-3 .smi-block-features_list .smi-feature-icon{display:flex;flex:none;width:calc(var(--icon-size)*var(--icon-scale, 1));height:calc(var(--icon-size)*var(--icon-scale, 1))}.smi-section-image-hero-3 .smi-block-features_list .smi-feature-icon svg,.smi-section-image-hero-3 .smi-block-features_list .smi-feature-icon img{width:100%;height:100%;object-fit:cover}.smi-section-image-hero-3 .smi-block-features_list .smi-feature-text{font-size:calc(var(--font-body-scale)*var(--label-size))}.smi-section-image-hero-3 .smi-block-video{display:flex;justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-video .smi-volume-control{top:unset;left:unset;right:16px;bottom:16px}.smi-section-image-hero-3 .smi-block-video .smi-volume-control .smi-mute-button{background:rgba(0,0,0,0)}.smi-section-image-hero-3 .smi-block-video .smi-video-wrapper{overflow:hidden}.smi-section-image-hero-3 .smi-block-video .smi-video-wrapper:not(.smi-enable-popup) .smi-video-snippets{background:rgba(0,0,0,0)}.smi-section-image-hero-3 .smi-block-video .smi-video-wrapper.smi-enable-popup .smi-video-snippets{aspect-ratio:var(--video-ratio-mobile)}@media screen and (min-width: 768px){.smi-section-image-hero-3 .smi-block-video .smi-video-wrapper.smi-enable-popup .smi-video-snippets{aspect-ratio:var(--video-ratio)}}.smi-section-image-hero-3 .smi-block-image{display:flex;justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-image .smi-image-wrapper{display:flex;overflow:hidden}.smi-section-image-hero-3 .smi-block-image .smi-image-wrapper svg,.smi-section-image-hero-3 .smi-block-image .smi-image-wrapper img{width:100%;height:auto;object-fit:cover}.smi-section-image-hero-3 .smi-block-icon_with_text .smi-list-icon-wrapper{overflow:hidden}.smi-section-image-hero-3 .smi-block-icon_with_text .smi-list-icon-content{display:flex;gap:16px;flex-wrap:wrap}.smi-section-image-hero-3 .smi-block-icon_with_text .smi-icon-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}.smi-section-image-hero-3 .smi-block-icon_with_text .smi-icon{display:flex;width:calc(var(--icon-size)*var(--icon-scale, 1));height:calc(var(--icon-size)*var(--icon-scale, 1))}.smi-section-image-hero-3 .smi-block-icon_with_text .smi-icon svg,.smi-section-image-hero-3 .smi-block-icon_with_text .smi-icon img{width:100%;height:100%;object-fit:cover}.smi-section-image-hero-3 .smi-block-icon_with_text .smi-text-content{text-align:center}.smi-section-image-hero-3 .smi-block-testimonial{display:flex;justify-content:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-testimonial .smi-testimonial-wrapper{display:flex;flex-direction:column;gap:16px;align-items:var(--content-alignment);text-align:var(--content-alignment)}.smi-section-image-hero-3 .smi-block-testimonial .smi-icon{display:flex;width:calc(var(--icon-size)*var(--icon-scale, 1));height:calc(var(--icon-size)*var(--icon-scale, 1))}.smi-section-image-hero-3 .smi-block-testimonial .smi-icon svg,.smi-section-image-hero-3 .smi-block-testimonial .smi-icon img{width:100%;height:100%;object-fit:cover}.smi-section-image-hero-3 .smi-block-testimonial .smi-author-content{display:flex;align-items:center;gap:16px}.smi-section-image-hero-3 .smi-block-testimonial .smi-author-avatar{display:flex;width:var(--avatar-size);height:var(--avatar-size);border-radius:50%;overflow:hidden;flex:none}.smi-section-image-hero-3 .smi-block-testimonial .smi-author-avatar svg,.smi-section-image-hero-3 .smi-block-testimonial .smi-author-avatar img{width:100%;height:100%;object-fit:cover}.smi-section-image-hero-3 .smi-block-testimonial .smi-author-name{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.smi-text-detail-lg-item{color:var(--basieco-iteem);background:var(--podes-ite2m)}
+</style>
+<script src="{{ 'smi-video.min.js' | asset_url }}" defer data-id="smi-video.min.js" data-section-id="smi-{{ section.id }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ 'smi-video.min.css' | asset_url }}" media="screen" onload="this.onload=null;this.media='all'">
+<script src="{{ 'smi-countdown-timer-new-2.min.js' | asset_url }}" defer data-id="smi-countdown-timer-new-2.min.js" data-section-id="smi-{{ section.id }}"></script>
+<div id="smi-{{ section.id }}" class="smi-{{ section.id }} smi-display-settings smi-display-{{ section.settings.display_on }} smi-section__inner smi-gradient smi-section-image-hero-3 smi-color-{{ section.settings.color_scheme }}" data-section="image-hero-3" data-name="✧Image hero 3">
+    
+    {% liquid
+        assign background_block = section.blocks | where: 'type', 'background' | first
+        if background_block
+            render 'smi-background', section: section, is_reference: true
+        endif
+    %}
+	<div class="smi-{{ section.settings.full_width }}">
+		<div class="smi-image-hero-wrapper  smi-d-flex smi-gradient {% if section.settings.hero_height == 'adapt_to_image' %} smi-adapt-image-desktop {% endif %} {% if section.settings.hero_height_mobile == 'adapt_to_image' %} smi-adapt-image-mobile {% endif %} {{ custom_color_content }} {{ position_content }} {% if section.settings.full_width != 'container-fluid-no-padding' %} smi-content-wrapper smi-border smi-shadow {% endif %}" data-ratio-desktop="{{ aspect_ratio_md }}" data-ratio-mobile="{{ aspect_ratio_xs }} ">
+			{% liquid
+  assign background_animation = section.settings.animation
+  assign background_image_class = ''
+if background_animation == 'parallax' 
+	assign background_image_class = 'smi-is-parallax'
+endif
+%}
+<div class="smi-hero-background smi-absolute-full smi-background-block--{{background_animation }}" smind-key="type_media,hero_height" smind-attributes smind-attr-media>
+	{% if section.settings.type_media == 'image' %}
+		{% liquid
+			assign background_image = images[section.settings.image]
+        	assign background_image_mobile = images[section.settings.mobile_image_optional]
+		%}	
+		{% if background_image != blank or background_image_mobile != blank %}
+			<picture>
+				{%- if background_image_mobile != blank -%}
+					<source media="(max-width:460px)" srcset="{{ background_image_mobile | image_url: width : 700 }}">
+					<source media="(max-width:767px)" srcset="{{ background_image_mobile | image_url: width : 1100 }}">
+				{%- endif -%}
+				{%- if background_image != blank -%}
+					{% if background_image_mobile == blank %}
+						<source media="(max-width:460px)" srcset="{{ background_image | image_url: width : 700 }}">
+						<source media="(max-width:767px)" srcset="{{ background_image | image_url: width : 1100 }}">
+					{% endif %}
+					{{ background_image | image_url: width : 1920 | image_tag: class: background_image_class }}
+				{%- elsif background_image_mobile != blank -%}
+					{% assign background_image_class = background_image_class | append: ' smi-image-mobile' %}
+					{{ background_image_mobile | image_url: width : 767 | image_tag: class: background_image_class }}
+				{%- endif -%}
+			</picture>
+        {% endif %}
+	{% else %}
+		{% render 'smi-video', 
+			video_url: section.settings.video_url, 
+			upload_video: section.settings.video,
+			upload_video_mobile: section.settings.mobile_video_optional,
+			autoplay: true, 
+			show_mute:section.settings.enable_sound_control,
+			fit_video: true,
+			placeholder_name: 'lifestyle-1',
+      		placeholder_class: 'smi-placeholder-light' 
+		,
+      section: section,
+      block: block,
+      is_reference: true,
+      section_id_origin: section_id_origin
+    					%}
+	{% endif %}	
+</div>
+			<div class="smi-image-hero-content ">
+				{% for block in section.blocks %}
+					{% liquid
+						assign exclude = 'color, background'
+						if exclude contains block.type
+							continue
+						endif
+					%}		
+					<div id="smi-{{ block.id }}" class="smi-block-{{ block.type }} smi-image-hero-block" {{ block.shopify_attributes }}>
+						{% if block.type == 'rating_icons' %}
+							<div class="smi-component-rating-icons-wrapper">
+	<div class="smi-component-rating-icons smi-component-rating-icons-{{ block.id }} smi-column-gap-xs smi-row-gap-xs {% if block.settings.show_background %} smi-has-background {% endif %}">
+		<style>
+			.smi-component-rating-icons-{{ block.id }} {
+				--icon-size: {{ block.settings.icon_size_desktop }}px;
+				--icon-gap: {{ block.settings.icon_gap_desktop }}px;
+				--icon-color: {{ block.settings.icon_color }};
+				--image-width: {{ block.settings.image_width }}px;
+				--content-direction: {{ block.settings.direction_desktop }};
+				{% if block.settings.direction_desktop == 'row' %}
+					align-items: center;
+				{% else  %}	
+					align-items: var(--content-alignment,start);
+					text-align: var(--content-alignment,start);
+				{% endif %}	
+				{% if block.settings.custom_text_color %}
+					--text-color: {{ block.settings.text_color | color_extract: 'red' }},{{ block.settings.text_color | color_extract: 'green' }},{{ block.settings.text_color | color_extract: 'blue' }};
+				{% endif %}	
+				{% if block.settings.show_background %}
+					--border-thickness: {{ block.settings.border_thickness }}px;
+					--thickness-opacity: {{ block.settings.thickness_opacity | divided_by: 100.0 }};
+					--thickness-color: {{ block.settings.thickness_color | color_extract: 'red' }}, {{ block.settings.thickness_color | color_extract: 'green' }}, {{ block.settings.thickness_color | color_extract: 'blue' }};
+					--padding_scale: {{ block.settings.padding_scale_desktop | divided_by: 100.0 }};
+					--icon-background: {{ block.settings.icon_background | color_extract: 'red' }}, {{ block.settings.icon_background | color_extract: 'green' }}, {{ block.settings.icon_background | color_extract: 'blue' }};
+					--icon-background-opacity: {{ block.settings.icon_background_opacity | divided_by: 100.0 }};
+					--borner-radius: {{ block.settings.borner_radius }}px;
+				{% endif %}	
+			}
+			@media(max-width:767.8px) {
+				.smi-component-rating-icons-{{ block.id }} {
+					--icon-size: {{ block.settings.icon_size_mobile }}px;
+					--icon-gap: {{ block.settings.icon_gap_mobile }}px;
+					--content-direction: {{ block.settings.direction_mobile }};
+					{% if block.settings.show_background %}
+						--padding_scale: {{ block.settings.padding_scale_mobile | divided_by: 100.0 }};
+					{% endif %}	
+					{% if block.settings.direction_mobile == 'row' %}
+						align-items: center;
+					{% else %}	
+						align-items: var(--content-alignment,start);
+						text-align: var(--content-alignment,start);
+					{% endif %}
+				}
+			}
+		</style>
+		{% if images[block.settings.upload_image] != blank or block.settings.type_star == 'icon' %}
+			<div class="smi-rating-icons-wrapper smi-rating-icons-{{ block.id }} ">
+				{% if block.settings.type_star == 'image' %}
+					{%- if images[block.settings.upload_image] != blank -%}
+						{% assign image_width = block.settings.image_width | times: 2 %}
+						{{ images[block.settings.upload_image] | image_url: width: 750 | image_tag: loading: 'eager' }}
+					{%- endif -%}
+				{% else %}
+					<div class="smi-rating-icons smi-d-inline-flex smi-align-items-center">
+	{% liquid
+		assign icon_style = block.settings.icon_style
+		assign star = block.settings.number_icon | times: 1
+		assign star_floor = star | floor
+		assign star_ceil = star | ceil
+		assign icon_color = block.settings.icon_color
+	%}
+    {% for i in (1..5) %}
+        {%- if i <= star_floor -%}
+            <span>{% render 'rating-icons', icon_style: icon_style ,icon_type:"fill", icon_color: icon_color ,
+      section: section,
+      block: block,
+      is_reference: true,
+      section_id_origin: section_id_origin
+    					%}</span>
+        {% elsif i > star_floor and i <= star_ceil %}
+            <span>{% render 'rating-icons', icon_style: icon_style ,icon_type:"half", icon_color: icon_color ,
+      section: section,
+      block: block,
+      is_reference: true,
+      section_id_origin: section_id_origin
+    					%}</span>
+        {% elsif i > star_ceil  %}
+            <span>{% render 'rating-icons', icon_style: icon_style ,icon_type:"outline",icon_color: icon_color  ,
+      section: section,
+      block: block,
+      is_reference: true,
+      section_id_origin: section_id_origin
+    					%}</span>
+        {%- endif -%}
+    {% endfor %}
+</div>
+				{% endif %}		
+			</div>
+		{% endif %}
+		{% if block.settings.rating_text != blank %}
+			{%- assign rating_text_size = '-mb ' | append:block.settings.rating_text_size  | prepend: block.settings.rating_text_size -%}
+			<div class="smi-rating-text {{ rating_text_size }} {% if block.settings.custom_text_color %} smi-custom-text-color {% endif %}">
+				{{ block.settings.rating_text }}
+			</div>
+		{% endif %}	
+	</div>
+</div>
+						{% endif %}
+						{% if block.type == 'spacer' %}
+							<style>
+	#smi-{{ block.id }} .smi-spacer{
+		width: 100%;
+		height: {{ block.settings.desktop_size }}px;
+	}
+	@media(max-width:767px) {
+		#smi-{{ block.id }} .smi-spacer{
+			height: {{ block.settings.mobile_size }}px;
+		}
+	}
+</style>
+<div class="smi-spacer">&nbsp</div>
+						{% endif %}	
+						{% if block.type == 'divider' %}
+<style>
+	#smi-{{ block.id }} .smi-diviver{
+		--divider-opacity: {{ block.settings.opacity_divider | divided_by: 100.0 }};
+		width: 100%;
+		height: {{ block.settings.thickness_divider }}px;
+		background: rgba(var(--color-foreground), var(--divider-opacity));
+	}
+</style>
+<div class="smi-diviver">&nbsp</div>
+						{% endif %}	
+						{% if block.type == 'social_proof' %}
+							<style>
+	#smi-{{ block.id }} .smi-social-proof {
+		--avatar-size: {{ block.settings.avatar_size }}px;
+	}
+</style>
+<div class="smi-social-proof smi-{{ block.settings.direction }}">
+	{% if images[block.settings.avatar_1] != blank or images[block.settings.avatar_2] != blank or images[block.settings.avatar_3] != blank or images[block.settings.avatar_4] != blank %}
+		<div class="smi-avatar-wrapper">
+			{% assign image_width = block.settings.avatar_size | times: 2 %}
+			{% if images[block.settings.avatar_1] != blank %}
+				{{  images[block.settings.avatar_1] | image_url: width: image_width | image_tag: class: 'smi-avatar' }}
+			{% endif %}  
+			{% if images[block.settings.avatar_2] != blank %}
+				{{  images[block.settings.avatar_2] | image_url: width: image_width | image_tag: class: 'smi-avatar' }}
+			{% endif %}   
+			{% if images[block.settings.avatar_3] != blank %}
+				{{  images[block.settings.avatar_3] | image_url: width: image_width | image_tag: class: 'smi-avatar' }}
+			{% endif %}
+			{% if images[block.settings.avatar_4] != blank %}
+				{{  images[block.settings.avatar_4] | image_url: width: image_width | image_tag: class: 'smi-avatar' }}
+			{% endif %}
+		</div>   
+	{% endif %}
+	{% if block.settings.content != blank %}
+			<div class="smi-text-md smi-social-proof-content">{{ block.settings.content }}</div>
+		{% endif %}	
+</div>
+						{% endif %}
+						{% if block.type == 'heading' %}
+							{%-liquid
+    if settings.smi_animations_reveal_on_scroll != nil
+        assign animation_scroll = settings.smi_animations_reveal_on_scroll
+    else
+        assign global_settings = shop.metafields.smind.settings.value
+        assign animation_scroll = global_settings.revealOnScroll
+    endif
+-%}
+<div
+	class="smi-heading-component smi-heading-component--align-{{ block.settings.heading_alignment }} smi-link-wrapper" {{- block.shopify_attributes -}}
+	style="--heading-alignment: {{ block.settings.heading_alignment }}">
+	{% liquid
+		assign heading = block.settings.heading | strip
+		assign sub_heading = block.settings.sub_heading | strip
+		assign description = block.settings.description | strip
+		assign heading_tags = block.settings.heading_tags | default:'h2'
+		assign heading_size = block.settings.heading_size
+	%}
+	<div class="smi-heading-inner
+    {%- if animation_scroll %} smi-scroll-trigger smi-animate--slide-in{% endif -%}
+    {%- if heading != blank or sub_heading != blank or description != blank %} smi-mb-xxl{% endif -%}
+    ">
+		{%- assign sub_heading = block.settings.sub_heading | strip -%}
+{%- assign sub_heading_size = blank -%}
+{% if block.settings.sub_heading_size != blank %}
+	{%- assign sub_heading_size = '-mb ' | append:block.settings.sub_heading_size  | prepend: block.settings.sub_heading_size -%}
+{% endif %}
+{% if sub_heading != blank %}
+    <p class="{% if sub_heading_size != blank %}{{sub_heading_size}}{% else %}smi-text-sub{% endif %} smi-mb-xs smi-heading-component__subheading" smind-key="sub_heading" smind-attributes smind-attr-text>{{- sub_heading -}}</p>
+{% endif %}
+		{%- assign description = block.settings.description | strip -%}
+{%- assign heading = block.settings.heading | strip -%}
+{% if heading != blank %}
+    <{{heading_tags}} class="{{ heading_size }} {% if description != blank %}smi-mb-sm{% endif %} smi-heading-component__heading" smind-key="heading" smind-attributes smind-attr-text>{{- heading -}}</{{heading_tags}}>
+{% endif %}
+		{%- assign description = block.settings.description | strip -%}
+{%- assign description_size = blank -%}
+{% if block.settings.description_size != blank %}
+	{%- assign description_size = '-mb ' | append:block.settings.description_size  | prepend: block.settings.description_size -%}
+{% endif %}
+{% if description != blank %}
+    <div class="{% if description_size != blank %}{{description_size}}{% else %}smi-text-md{% endif %} smi-heading-component__description smi-format-content" smind-key="description" smind-attributes smind-attr-text>{{ description }}</div>
+{% endif %}
+	</div>
+</div>
+						{% endif %}	
+						{% if block.type == 'button' %}
+							<div class="{{ block.settings.button_animation }} smi-{{ block.settings.custom_size }} smi-button-container">
+								<style>
+									{% if block.settings.custom_size == true %}
+										#smi-{{ block.id }} .smi-button {
+											--buttons-scale: {{ block.settings.button_padding_scale_desktop | divided_by: 100.0 }};
+											font-size: {{ block.settings.button_size_desktop }}px;
+										}
+										@media(max-width:767px) {
+											#smi-{{ block.id }} .smi-button {
+												--buttons-scale: {{ block.settings.button_padding_scale_mobile | divided_by: 100.0 }};
+												font-size: {{ block.settings.button_size_mobile }}px;
+											}
+										}
+									{% endif %}	
+								</style>
+								<div class="smi-component-buttons smi-button-wrapper
+	{% if block.settings.second_button_style contains 'only_arrow' or block.settings.first_button_style contains 'only_arrow' %} smi-has-only-icon{% endif %}
+    {% if block.settings.button_full_width == true %} smi-component-buttons-full-width{% endif %}
+    {% unless block.settings.first_button_style contains 'text' or block.settings.second_button_style contains 'text' %} smi-component-buttons--same-width{% endunless %}" smind-key="first_button_label,first_button_link,second_button_label,second_button_link,button_full_width,button_size_mobile,second_button_style" smind-attributes smind-attr-button>
+    {% liquid
+    assign button_label = block.settings.first_button_label
+    assign button_style = block.settings.first_button_style
+    assign button_link = block.settings.first_button_link
+%}
+{% if button_label != blank %}
+    <a
+            href="{{- button_link -}}"
+            class="smi-button smi-button--first smi-text-button smi-button--{{ button_style | split: '_' | first -}}
+                {%- if button_style contains 'arrow' %} smi-has-icon{% endif %}
+				{%- if button_style contains 'only_arrow' %} smi-only-icon{% endif %}
+                {{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' -}}
+                {{- ' smi-border smi-shadow' -}}">
+			{% unless  button_style contains 'only_arrow' %}	
+				<span>
+					{{- button_label | escape -}}
+				</span>
+			{% endunless %}
+        {% if button_style contains 'arrow' %}
+            <div class="smi-d-flex smi-align-content-center">
+                {% render 'smi-icons', icon: 'arrow-right-2' %}
+            </div>
+        {% endif %}
+    </a>
+{% endif %}
+    {% liquid
+    assign button_label = block.settings.second_button_label
+    assign button_style = block.settings.second_button_style
+    assign button_link = block.settings.second_button_link
+%}
+{% if button_label != blank %}
+    <a
+		href="{{- button_link -}}"
+		class="smi-button smi-button--second smi-text-button smi-button--{{ button_style | split: '_' | first -}}
+			{%- if button_style contains 'arrow' %} smi-has-icon{% endif %}
+			{%- if button_style contains 'only_arrow' %} smi-only-icon{% endif %}
+			{{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' -}}
+			{{- ' smi-border smi-shadow' -}}">
+		{% unless  button_style contains 'only_arrow' %}	
+			<span>
+				{{- button_label | escape -}}
+			</span>
+		{% endunless %}
+        {% if button_style contains 'arrow' %}
+            <div class="smi-d-flex smi-align-content-center">
+                {% render 'smi-icons', icon: 'arrow-right-2' %}
+            </div>
+        {% endif %}
+    </a>
+{% endif %}
+</div>
+							</div>
+						{% endif %}	
+						{% if block.type == 'countdown_timer' %}
+							<div class="smi-countdown-timer-container smi-countdown-timer-container-style-{{ block.settings.countdown_style }} smi-d-flex smi-flex-wrap smi-timer-{{ section.id }}"
+	data-block-id="{{ section.id }}"
+	data-smi-timer="{{ block.settings.end_date_time }}"
+	data-countdown-type="{{ block.settings.countdown_type }}"
+	data-expire-message="{{ block.settings.countdown_expire_message }}"
+    data-smi-timer-style="{{ block.settings.countdown_style }}"
+    data-hide-expires="{{ block.settings.hide_expires }}"
+    data-timezone="{{ block.settings.timezone }}"
+	data-smi-start="{{ block.settings.start_date_time }}"
+    data-smi-end="{{ block.settings.end_date_time }}"
+	data-smi-minute-count="{{ block.settings.minutes_count }}"
+	data-smi-weekday="{{ block.settings.weekday }}"
+	data-smi-start-date-daily="{{ block.settings.start_date_daily }}"
+	data-smi-end-date-daily="{{ block.settings.end_date_daily }}"
+	data-smi-start-time-daily="{{ block.settings.start_time_daily }}"
+	data-smi-end-time-daily="{{ block.settings.end_time_daily }}"
+	data-smi-action-expired-fixed="{{ block.settings.action_expired_fixed }}"
+	data-smi-action-expired-daily="{{ block.settings.action_expired_daily }}"
+>
+{%  liquid
+        assign cls_count_ele = ''
+        assign cls_count = ''
+        assign cls_unit = ''
+        assign cls_count_solid2 = ''
+		if block.settings.font_type == 'body'
+			assign number_size = 'smi-text-md'
+		else 
+			assign number_size = block.settings.number_size
+		endif
+		if number_size == 'smi-h4'
+			assign _cr = '110'
+			assign _cr_xy = '55'
+			assign _cr_r = '48'
+			assign _pir = '302'
+		elsif number_size == 'smi-h3'
+			assign _cr = '120'
+			assign _cr_xy = '60'
+			assign _cr_r = '54'
+			assign _pir = '339'
+		elsif number_size == 'smi-h2'
+			assign _cr = '130'
+			assign _cr_xy = '65'
+			assign _cr_r = '58'
+			assign _pir = '364'
+		elsif number_size == 'smi-h1'
+			assign _cr = '140'
+			assign _cr_xy = '70'
+			assign _cr_r = '64'
+			assign _pir = '402'
+		elsif number_size == 'smi-text-md'
+			assign _cr = '90'
+			assign _cr_xy = '46'
+			assign _cr_r = '38'
+			assign _pir = '255'
+		endif
+        if block.settings.countdown_style == 'classic_2' or block.settings.countdown_style == 'border' or block.settings.countdown_style == 'border_radius'
+            assign cls_count_ele = cls_count_ele | append: ' smi-px-lg'
+            assign cls_unit = cls_unit | append: "smi-unit"
+            if block.settings.countdown_style != 'classic_2'
+            assign cls_count_ele = cls_count_ele | append: ' smi-py-xs'
+            endif
+        endif
+        if block.settings.countdown_style contains 'solid_1'
+            assign cls_count =  cls_count | append: 'smi-py-sm'
+        endif
+        if block.settings.countdown_style contains 'solid_2'
+            assign cls_count = cls_count | append: " smi-d-flex smi-column-gap-xxs"
+            assign cls_count_solid2 = 'smi-px-xs smi-py-xxs smi-num-unit'
+            if block.settings.countdown_style == 'solid_2_radius'
+            	assign cls_count_solid2 = cls_count_solid2 | append: ' smi-num-unit__border'
+            endif
+        endif
+    %}
+    <div class="smi-invalid smi-d-none smi-text-md">{{ 'smind.general.invalid_date_format' | t }}</div>
+    <div class="smi-countdown-style-main smi-countdown-font-{{ block.settings.font_type }} {% if block.settings.countdown_style == "text" %}smi-custom-countdown-style-{{ block.settings.customize_countdown_style }} smi-button-wrapper smi-button smi-button--solid smi-border smi-shadow smi-align-items-center{% else %} smi-align-content-stretch{% endif %} smi-w-100 smi-countdown-style-{{ block.settings.countdown_style }} smi-countdown-main-size-{{ number_size }} smi-d-flex {{- ' smi-coutdown-container' -}}
+        {% liquid
+		 	if block.settings.countdown_style == 'text'
+                echo ' smi-column-gap-xs'
+            elsif block.settings.countdown_style == 'classic_1'
+                echo ' smi-column-gap-lg'
+			elsif block.settings.countdown_style == 'circular'
+				echo ' smi-column-gap-xxs'
+            else
+                if block.settings.countdown_style != 'classic_2' and block.settings.countdown_style != 'border' and block.settings.countdown_style != 'border_radius'
+                    echo ' smi-column-gap-md'
+                endif
+            endif
+        %}"
+			style="
+				--number-font: var(--font-{{ block.settings.font_type }}-family);
+				--number-font-weight: var(--font-{{ block.settings.font_type }}-weight);
+				--number-font-style: var(--font-{{ block.settings.font_type }}-style);
+				{% if block.settings.countdown_style == 'text' and block.settings.customize_countdown_style == true %}
+					--border-radius: {{ block.settings.countdown_radius }}px;
+					--border-width: {{ block.settings.countdown_thickness }}px;
+					--border-opacity: {{ block.settings.countdown_opacity |  divided_by: 100.0 }};
+					--shadow-horizontal-offset: {{ block.settings.countdown_shadow | split: "," |  slice: 0  }}px;
+					--shadow-vertical-offset: {{ block.settings.countdown_shadow | split: "," |  slice: 1  }}px;
+					--shadow-blur-radius: {{ block.settings.countdown_shadow | split: "," |  slice: 2  }}px;
+					--shadow-opacity: {{ block.settings.countdown_shadow_opacity | divided_by: 100.0 }};
+				{% endif %}
+			"
+    >
+    {%  liquid 
+        assign unitCount = 'd,h,m,s' | split: ","
+    %}
+    {% for unit in unitCount %}
+        <div class="smi-inner {{- cls_count_ele -}} {% if block.settings.countdown_style == 'circular' %} smi-inner-circular {{ number_size }}-size {% endif %}">
+			{% if block.settings.countdown_style == 'circular' %}
+				<svg class="circle circle-{{ unit }}" style="--pir: {{ _pir }};"
+				width="{{ _cr }}"
+				height="{{ _cr }}">
+					<circle class="bg" cx="{{ _cr_xy }}" cy="{{ _cr_xy }}" r="{{ _cr_r }}" />
+					<circle class="progress" cx="{{ _cr_xy }}" cy="{{ _cr_xy }}" r="{{ _cr_r }}" />
+				  </svg>
+			{% endif %}
+			<div class="smi-inner-countdown {% if block.settings.countdown_style == 'text' %}smi-d-flex smi-align-items-center{% endif %}">
+				<div class="smi-num-{{ unit }} smi-d-flex smi-justify-content-center smi-num {% if number_font_type == 'heading' %} smi-h1 {% endif %} {% if block.settings.font_type != 'body' %} smi-num-size {% else %} smi-num-size-body {% endif %} {{ cls_count }}" id="smi_count_days_{{ section.id }}" style="margin: auto;">
+					{% if block.settings.countdown_style contains 'solid_2' %}
+						<span class="{{ cls_count_solid2 }}"><span class="smi-unit-label">{{ unit | upcase }}</span><span class="smi-expired-label smi-d-none">0</span></span>
+						<span class="{{ cls_count_solid2 }}"><span class="smi-unit-label">{{ unit | upcase }}</span><span class="smi-expired-label smi-d-none">0</span></span>
+					{% else %}
+						<span class="smi-unit-label">{{unit | upcase }}{{ unit | upcase}}</span><span class="smi-expired-label smi-d-none">00</span>
+					{% endif %}
+				</div>
+				{% assign text_size = text_size | default: "smi-text-md" %}
+				<div class="{{ cls_unit }} {% unless block.settings.countdown_style == 'text' %}{{ text_size }} smi-color-text-75{% else %}{% if block.settings.font_type != 'body' %} smi-num-size {% else %} smi-num-size-body {% endif %}{% endunless %}">
+					{% if unit == 'd' %}
+						{% if block.settings.countdown_style == 'text' %}{{ 'smind.general.days_short' | t }}{% else %}{{ 'smind.general.days' | t }}{% endif %}
+					{% elsif unit == 'h' %}
+						{% if block.settings.countdown_style == 'text' %}{{ 'smind.general.hours_short' | t }}{% else %}{{ 'smind.general.hours' | t }}{% endif %}
+					{% elsif unit == 'm' %}
+						{% if block.settings.countdown_style == 'text' %}{{ 'smind.general.minutes_short' | t }}{% else %}{{ 'smind.general.minutes' | t }}{% endif %}
+					{% elsif unit == 's' %}
+						{% if block.settings.countdown_style == 'text' %}{{ 'smind.general.seconds_short' | t }}{% else %}{{ 'smind.general.seconds' | t }}{% endif %}
+					{% endif %}
+				</div>
+			</div>
+        </div>
+        {% if forloop.index < unitCount.size and block.settings.countdown_style != 'circular' %}
+            <div class="smi-colon smi-d-flex smi-align-items-center {% if block.settings.font_type == 'body' %} smi-num-size {% else %} smi-num-size-body {% endif %}">:</div>
+        {% endif %}
+    {% endfor %}
+    </div>  
+	<h2 class="smi-mgs-noti smi-w-100 smi-pt-md {{ block.settings.message_size }} smi-d-none smi-expired-message" style="color: {{ block.settings.message_color }};">
+		{{ block.settings.countdown_expire_message }}
+	</h2>
+	<h2 class="smi-mgs-noti smi-w-100 smi-text-center smi-pt-md smi-h3 smi-d-none smi-err-condition">
+		{{ 'smind.general.err_condition_countdown_daily' | t }}
+	</h2>
+</div>
+						{% endif %}
+						{% if block.type == 'promo_code' %}
+							<style>
+	#smi-{{ block.id }} .smi-pro-code-wrapper {
+		width: {{ block.settings.content_max_width }}px;
+		max-width:100%;
+	}
+	{% if block.settings.custom_inputs_style ==  true %}
+		#smi-{{ block.id }} .smi-pro-code-wrapper .smi-button-wrapper {
+			--buttons-border-width: {{ block.settings.inputs_border_thickness }}px;
+			--buttons-border-opacity: {{ block.settings.inputs_border_opacity | divided_by: 100.0 }};
+			--buttons-radius: {{ block.settings.inputs_radius }}px;
+			--buttons-shadow-opacity: {{ block.settings.inputs_shadow_opacity | divided_by: 100.0 }};
+			{% assign smi_button_shadow = block.settings.inputs_shadow | split: "," %}
+			--buttons-shadow-horizontal-offset: {{ smi_button_shadow[0] }}px;
+			--buttons-shadow-vertical-offset: {{ smi_button_shadow[1] }}px;
+			--buttons-shadow-blur-radius: {{ smi_button_shadow[2] }}px;
+		}
+	{% endif %}	
+</style>
+{% liquid
+  	assign text_button_copy = 'smind.form.text_button_copy' | t
+    assign text_button_copied = 'smind.form.text_button_copied' | t
+%}
+<div class="smi-pro-code-wrapper">
+	{% if block.settings.description_code != blank %}
+		<div class="smi-text-md smi-description smi-mb-md">{{ block.settings.description_code }}</div>
+	{% endif %}		
+	{% if block.settings.code != blank %}
+		<div class="smi-button-wrapper smi-code-copy smi-d-flex smi-border smi-shadow">
+			<span class="smi-content-copy smi-text-sm smi-button smi-button--outline">{{ block.settings.code }}</span>
+			<span class="smi-button-copy smi-button smi-button--solid smi-text-button">	
+				<span>{{ 'smind.general.copied_code' | t }}</span>
+				{% render 'smi-icons', icon: 'copy' %}
+				<span class="tooltiptext smi-text-sm" id="smi-copy-code-text" data-text-copied="{{text_button_copied}} {{ block.settings.code }}">{{text_button_copy}}</span>
+			</span>
+		</div>
+	{% endif %}	
+</div> 
+						{% endif %}	
+						{% if block.type == 'badge' %}
+							<style>
+	#smi-{{ block.id }} {
+		--badge-item-gap: {{ block.settings.badge_item_gap }}px;
+		--badge-corner-radius: {{ block.settings.badge_corner_radius }}px;
+		--badge-shadow-opacity: {{ block.settings.badge_shadow_opacity | divided_by: 100.0 }};
+		{% assign smi_badge_shadow = block.settings.badge_shadow | split: "," %}
+		--badge-shadow-horizontal-offset: {{ smi_badge_shadow[0] }}px;
+		--badge-shadow-vertical-offset: {{ smi_badge_shadow[1] }}px;
+		--badge-shadow-blur-radius: {{ smi_badge_shadow[2] }}px;
+		--icon-size: {{ block.settings.icon_size_desktop }}px;
+		--label-size: {{ block.settings.label_size_desktop }}px;
+		--padding-scale: {{ block.settings.padding_scale_desktop | divided_by: 100.0 }};
+	}
+	@media(max-width:767px) {
+		#smi-{{ block.id }} {
+			--icon-size: {{ block.settings.icon_size_mobile }}px;
+			--label-size: {{ block.settings.label_size_mobile }}px;
+			--padding-scale: {{ block.settings.padding_scale_mobile | divided_by: 100.0 }};
+		}
+	}
+</style>
+<div class="smi-list-badges-wrapper">
+	{% if block.settings.show_badge_1 %}
+		<div class="smi-badge-item smi-badge-item-1">
+			<style>
+				#smi-{{ block.id }} .smi-badge-item-1 {
+					background: {{ block.settings.badge_background_color_1 }};
+					--color-foreground: {{ block.settings.badge_text_color_1 | color_extract: 'red' }}, {{ block.settings.badge_text_color_1 | color_extract: 'green' }},{{ block.settings.badge_text_color_1 | color_extract: 'blue' }};
+				}
+			</style>
+			{%- if images[block.settings.upload_icon_1] != blank -%}
+				<div class="smi-badge-icon">
+					{{ images[block.settings.upload_icon_1] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_1 != 'none' and block.settings.icon_1 != "" %}
+					<div class="smi-badge-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_1 -%}
+					</div>
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.label_1 != blank %}
+				<div class="smi-label">{{ block.settings.label_1 }}</div>
+			{% endif %}
+		</div>	
+	{% endif %}
+	{% if block.settings.show_badge_2 %}
+		<div class="smi-badge-item smi-badge-item-2">
+			<style>
+				#smi-{{ block.id }} .smi-badge-item-2 {
+					background: {{ block.settings.badge_background_color_2 }};
+					--color-foreground: {{ block.settings.badge_text_color_2 | color_extract: 'red' }}, {{ block.settings.badge_text_color_2 | color_extract: 'green' }},{{ block.settings.badge_text_color_2 | color_extract: 'blue' }};
+				}
+			</style>
+			{%- if images[block.settings.upload_icon_2] != blank -%}
+				<div class="smi-badge-icon">
+					{{ images[block.settings.upload_icon_2] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>	
+			{%- else -%}
+				{% if block.settings.icon_2 != 'none' and block.settings.icon_2 != "" %}
+					<div class="smi-badge-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_2 -%}
+					</div>
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.label_2 != blank %}
+				<div class="smi-label">{{ block.settings.label_2 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_badge_3 %}
+		<div class="smi-badge-item smi-badge-item-3">
+			<style>
+				#smi-{{ block.id }} .smi-badge-item-3 {
+					background: {{ block.settings.badge_background_color_3 }};
+					--color-foreground: {{ block.settings.badge_text_color_3 | color_extract: 'red' }}, {{ block.settings.badge_text_color_3 | color_extract: 'green' }},{{ block.settings.badge_text_color_3 | color_extract: 'blue' }};
+				}
+			</style>
+			{%- if images[block.settings.upload_icon_3] != blank -%}
+				<div class="smi-badge-icon">
+					{{ images[block.settings.upload_icon_3] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_3 != 'none' and block.settings.icon_3 != "" %}
+					<div class="smi-badge-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_3 -%}
+					</div>
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.label_3 != blank %}
+				<div class="smi-label">{{ block.settings.label_3 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_badge_4 %}
+		<div class="smi-badge-item smi-badge-item-4">
+			<style>
+				#smi-{{ block.id }} .smi-badge-item-4 {
+					background: {{ block.settings.badge_background_color_4 }};
+					--color-foreground: {{ block.settings.badge_text_color_4 | color_extract: 'red' }}, {{ block.settings.badge_text_color_4 | color_extract: 'green' }},{{ block.settings.badge_text_color_4 | color_extract: 'blue' }};
+				}
+			</style>
+			{%- if images[block.settings.upload_icon_4] != blank -%}
+				<div class="smi-badge-icon">
+					{{ images[block.settings.upload_icon_4] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_4 != 'none' and block.settings.icon_4 != "" %}
+					<div class="smi-badge-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_4 -%}
+					</div>
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.label_4 != blank %}
+				<div class="smi-label">{{ block.settings.label_4 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>
+						{% endif %}	
+						{% if block.type == 'features_list' %}
+							<style>
+	#smi-{{ block.id }} {
+		--feature-item-gap: {{ block.settings.feature_item_gap }}px;
+		--icon-size: {{ block.settings.feature_icon_size }}px;
+		--label-size: {{ block.settings.feature_text_size }}px;
+	}
+	#smi-{{ block.id }} .smi-feature-icon {
+		--color-foreground: {{ block.settings.icon_color | color_extract: 'red' }},{{ block.settings.icon_color | color_extract: 'green' }},{{ block.settings.icon_color | color_extract: 'blue' }};
+	}
+</style>
+<div class="smi-list-features-wrapper">
+	{% if block.settings.show_feature_1 %}
+		<div class="smi-feature-item smi-feature-item-1">
+			{%- if images[block.settings.upload_icon_1] != blank -%}
+				<div class="smi-feature-icon">
+					{{ images[block.settings.upload_icon_1] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_1 != 'none' and block.settings.icon_1 != "" %}
+					<div class="smi-feature-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_1 -%}
+					</div>	
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.text_1 != blank %}
+				<div class="smi-feature-text">{{ block.settings.text_1 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_feature_2 %}
+		<div class="smi-feature-item smi-feature-item-2">
+			{%- if images[block.settings.upload_icon_2] != blank -%}
+				<div class="smi-feature-icon">
+					{{ images[block.settings.upload_icon_2] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_2 != 'none' and block.settings.icon_2 != "" %}
+					<div class="smi-feature-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_2 -%}
+					</div>	
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.text_2 != blank %}
+				<div class="smi-feature-text">{{ block.settings.text_2 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_feature_3 %}
+		<div class="smi-feature-item smi-feature-item-3">
+			{%- if images[block.settings.upload_icon_3] != blank -%}
+				<div class="smi-feature-icon">
+					{{ images[block.settings.upload_icon_3] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_3 != 'none' and block.settings.icon_3 != "" %}
+					<div class="smi-feature-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_3 -%}
+					</div>
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.text_3 != blank %}
+				<div class="smi-feature-text">{{ block.settings.text_3 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_feature_4 %}
+		<div class="smi-feature-item smi-feature-item-4">
+				{%- if images[block.settings.upload_icon_4] != blank -%}
+					<div class="smi-feature-icon">
+						{{ images[block.settings.upload_icon_4] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+					</div>
+				{%- else -%}
+					{% if block.settings.icon_4 != 'none' and block.settings.icon_4 != "" %}
+						<div class="smi-feature-icon">
+							{%- render 'smi-custom-icons', icon: block.settings.icon_4 -%}
+						</div>
+					{% endif %}
+				{%- endif -%}
+			{% if block.settings.text_4 != blank %}
+				<div class="smi-feature-text">{{ block.settings.text_4 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_feature_5 %}
+		<div class="smi-feature-item smi-feature-item-5">
+			{%- if images[block.settings.upload_icon_5] != blank -%}
+				<div class="smi-feature-icon">
+					{{ images[block.settings.upload_icon_5] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_5 != 'none' and block.settings.icon_5 != "" %}
+					<div class="smi-feature-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_5 -%}
+					</div>	
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.text_5 != blank %}
+				<div class="smi-feature-text">{{ block.settings.text_5 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	{% if block.settings.show_feature_6 %}
+		<div class="smi-feature-item smi-feature-item-6">
+			{%- if images[block.settings.upload_icon_6] != blank -%}
+				<div class="smi-feature-icon">
+					{{ images[block.settings.upload_icon_6] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+				</div>
+			{%- else -%}
+				{% if block.settings.icon_6 != 'none' and block.settings.icon_6 != "" %}
+					<div class="smi-feature-icon">
+						{%- render 'smi-custom-icons', icon: block.settings.icon_6 -%}
+					</div>
+				{% endif %}
+			{%- endif -%}
+			{% if block.settings.text_6 != blank %}
+				<div class="smi-feature-text">{{ block.settings.text_6 }}</div>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>
+						{% endif %}
+						{% if block.type == 'video' %}
+							{% liquid
+	assign upload_video = block.settings.upload_video
+    assign video_url = block.settings.video_url
+    assign cover_image = images[block.settings.cover_image]
+    assign video_ratio = block.settings.video_ratio
+    assign show_mute = block.settings.enable_sound_control
+	assign play_button_size = 'm'
+	assign play_settings = block.settings.play_settings
+    if  video_ratio == 'auto' or video_ratio == 'original_video'
+        assign fit_video = false
+    else
+        assign fit_video = true
+    endif
+	if play_settings == 'popup'
+		assign autoplay = false
+		assign modal_id = 'smi-video-modal-' | append: section.id | append: '-' | append: block.id
+		assign control = true
+		assign fit_video = false
+		if video_ratio == 'original_video'
+			assign video_ratio = '4/3'
+		endif
+	else
+		assign autoplay = true
+		assign modal_id = null
+		assign control = false
+	endif
+    if video_ratio == 'original_video'
+		assign video_ratio = 'auto'
+	endif
+%}
+<style>
+	#smi-{{ block.id }} .smi-video-wrapper {
+		width: {{ block.settings.video_max_width }}px;
+		max-width:100%;
+	}
+	{% if block.settings.custom_media_style %}
+	#smi-{{ block.id }} .smi-video-wrapper {
+		--border-radius: {{ block.settings.video_radius }}px;
+		--border-width: {{ block.settings.video_border_thickness }}px;
+		--border-opacity: {{ block.settings.video_border_opacity | divided_by: 100.0 }};
+		--shadow-opacity: {{ block.settings.video_shadow_opacity | divided_by: 100.0 }};
+		{% assign smi_video_shadow = block.settings.video_shadow | split: "," %}
+		--shadow-horizontal-offset: {{ smi_video_shadow[0] }}px;
+		--shadow-vertical-offset: {{ smi_video_shadow[1] }}px;
+		--shadow-blur-radius: {{ smi_video_shadow[2] }}px;
+		--thickness-color: {{ block.settings.thickness_color | color_extract: 'red' }}, {{ block.settings.thickness_color | color_extract: 'green' }},{{ block.settings.thickness_color | color_extract: 'blue' }};
+		border: var(--border-width) solid rgba(var(--thickness-color), var(--border-opacity));
+	}
+	{% endif %}
+</style>
+<div class="smi-video-wrapper smi-media-wrapper smi-border smi-shadow {% if block.settings.play_settings == 'popup' %} smi-enable-popup {% endif %}">
+	{% render 'smi-video', 
+		video_url: video_url, 
+		upload_video: upload_video,
+		autoplay: autoplay, 
+		cover_image: cover_image,
+		show_mute:show_mute,
+		preview:preview,
+		video_ratio:video_ratio,
+		fit_video:fit_video,
+		play_button_size:play_button_size,
+		unmute:unmute ,
+		modal_id:modal_id,
+		control: control
+	,
+      section: section,
+      block: block,
+      is_reference: true,
+      section_id_origin: section_id_origin
+    					%}
+</div>
+						{% endif %}
+						{% if block.type == 'image' %}
+							<style>
+	#smi-{{ block.id }} .smi-image-wrapper {
+		width: {{  block.settings.image_width }}px;
+		max-width:100%;
+	}
+</style>
+<div class="smi-image-wrapper {% if block.settings.use_media_settings %} smi-media-wrapper smi-border smi-shadow {% endif %}">
+	{%- if images[block.settings.upload_image] != blank -%}
+          {% liquid
+            assign image_object = images[block.settings.upload_image]
+          %}
+{% liquid
+    unless image_width
+        assign image_width = 1600
+    endunless
+    unless sizes
+        assign percent_item_mobile = 100 | divided_by: item_mobile | default: 100
+        assign percent_item_tablet = 100 | divided_by: item_tablet | default: 100
+        assign percent_item_desktop = 100 | divided_by: item_desktop | default: 100
+        assign sizes = '(max-width: 767px)' | append: percent_item_mobile | append: 'vw, (max-width: 991px) ' | append: percent_item_tablet | append: 'vw, ' | append: percent_item_desktop | append: 'vw'
+    endunless
+%} 
+{{
+  image_object
+  | image_url: width: image_width
+  | image_tag: class: image_classes, widths: '400,500,600,700,800,1000,1200,1400,1600,1900,2500', sizes: sizes
+}}
+        {% else %}
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'smi-placeholder-dark' }}
+        {%- endif -%}
+</div>
+						{% endif %}
+						{% if block.type == 'icon_with_text' %}
+							<style>
+	#smi-{{ block.id }} .smi-list-icon-content {
+		--item-gap: {{ block.settings.item_gap }}px;
+		--icon-size: {{ block.settings.icon_size }}px;
+		color: {{ block.settings.content_color }};
+		background: {{ block.settings.background_color }};
+		padding: {{ block.settings.icon_content_padding }}px;
+	}
+	#smi-{{ block.id }} .smi-list-icon-content .smi-svg-icon {
+		--color-foreground: {{ block.settings.icon_color | color_extract: 'red' }}, {{ block.settings.icon_color | color_extract: 'green' }},{{ block.settings.icon_color | color_extract: 'blue' }};
+	}
+	{% if block.settings.custom_style %}
+		#smi-{{ block.id }} .smi-list-icon-wrapper {
+			--border-radius: {{ block.settings.icon_radius }}px;
+			--border-width: {{ block.settings.icon_border_thickness }}px;
+			--border-opacity: {{ block.settings.icon_border_opacity | divided_by: 100.0 }};
+			--shadow-opacity: {{ block.settings.icon_shadow_opacity | divided_by: 100.0 }};
+			{% assign smi_icon_shadow = block.settings.icon_shadow | split: "," %}
+			--shadow-horizontal-offset: {{ smi_icon_shadow[0] }}px;
+			--shadow-vertical-offset: {{ smi_icon_shadow[1] }}px;
+			--shadow-blur-radius: {{ smi_icon_shadow[2] }}px;
+			}
+	{% endif %}	
+</style>
+<div class="smi-list-icon-wrapper smi-content-wrapper smi-border smi-shadow">
+	<div class="smi-list-icon-content">
+		{% if block.settings.show_item_1 %}
+			<div class="smi-icon-item smi-icon-item-1">
+				<div class="smi-icon">
+					{%- if images[block.settings.upload_icon_1] != blank -%}
+						{{ images[block.settings.upload_icon_1] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+					{%- else -%}
+						{% if block.settings.icon_1 != 'none' and block.settings.icon_1 != "" %}
+							{%- render 'smi-custom-icons', icon: block.settings.icon_1 -%}
+						{% endif %}
+					{%- endif -%}
+				</div>
+				{% if block.settings.text_1 != blank %}
+					<div class="smi-text-content">{{ block.settings.text_1 }}</div>
+				{% endif %}
+			</div>
+		{% endif %}
+		{% if block.settings.show_item_2 %}
+			<div class="smi-icon-item smi-icon-item-2">
+				<div class="smi-icon">
+					{%- if images[block.settings.upload_icon_2] != blank -%}
+						{{ images[block.settings.upload_icon_2] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+					{%- else -%}
+						{% if block.settings.icon_2 != 'none' and block.settings.icon_2 != "" %}
+							{%- render 'smi-custom-icons', icon: block.settings.icon_2 -%}
+						{% endif %}
+					{%- endif -%}
+				</div>
+				{% if block.settings.text_2 != blank %}
+					<div class="smi-text-content">{{ block.settings.text_2 }}</div>
+				{% endif %}
+			</div>
+		{% endif %}
+		{% if block.settings.show_item_3 %}
+			<div class="smi-icon-item smi-icon-item-3">
+				<div class="smi-icon">
+					{%- if images[block.settings.upload_icon_3] != blank -%}
+						{{ images[block.settings.upload_icon_3] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+					{%- else -%}
+						{% if block.settings.icon_3 != 'none' and block.settings.icon_3 != "" %}
+							{%- render 'smi-custom-icons', icon: block.settings.icon_3 -%}
+						{% endif %}
+					{%- endif -%}
+				</div>
+				{% if block.settings.text_3 != blank %}
+					<div class="smi-text-content">{{ block.settings.text_3 }}</div>
+				{% endif %}
+			</div>
+		{% endif %}
+		{% if block.settings.show_item_4 %}
+			<div class="smi-icon-item smi-icon-item-4">
+				<div class="smi-icon">
+					{%- if images[block.settings.upload_icon_4] != blank -%}
+						{{ images[block.settings.upload_icon_4] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+					{%- else -%}
+						{% if block.settings.icon_4 != 'none' and block.settings.icon_4 != "" %}
+							{%- render 'smi-custom-icons', icon: block.settings.icon_4 -%}
+						{% endif %}
+					{%- endif -%}
+				</div>
+				{% if block.settings.text_4 != blank %}
+					<div class="smi-text-content">{{ block.settings.text_4 }}</div>
+				{% endif %}
+			</div>
+		{% endif %}
+	</div>
+</div>
+						{% endif %}
+						{% if block.type == 'testimonial' %}
+							<style>
+	#smi-{{ block.id }} .smi-testimonial-wrapper {
+		--icon-size: {{ block.settings.icon_size }}px;
+		--avatar-size: {{ block.settings.author_image_size }}px;
+		--color-background: {{ block.settings.background_color | color_extract: 'red' }}, {{ block.settings.background_color | color_extract: 'green' }},{{ block.settings.background_color | color_extract: 'blue' }};
+		--content-background-opacity: {{ block.settings.content_background_opacity | divided_by: 100.0 }};
+		--color-foreground: {{ block.settings.content_color | color_extract: 'red' }}, {{ block.settings.content_color | color_extract: 'green' }},{{ block.settings.content_color | color_extract: 'blue' }};
+		width: {{ block.settings.content_max_width }}px;
+		max-width:100%;
+		padding: {{ block.settings.content_padding }}px;
+		background: rgba(var(--color-background),var(--content-background-opacity));
+		border-color: {{ block.settings.thickness_color }};
+	}
+	#smi-{{ block.id }} .smi-icon .smi-svg-icon {
+		--color-foreground: {{ block.settings.icon_color | color_extract: 'red' }}, {{ block.settings.icon_color | color_extract: 'green' }},{{ block.settings.icon_color | color_extract: 'blue' }};
+	}
+	#smi-{{ block.id }} .smi-name__verified {
+		--color-foreground: {{ block.settings.verified_color | color_extract: 'red' }}, {{ block.settings.verified_color | color_extract: 'green' }},{{ block.settings.verified_color | color_extract: 'blue' }};
+		color: rgba(var(--color-foreground),1)
+	}
+	{% if block.settings.custom_style %}
+		#smi-{{ block.id }} .smi-testimonial-wrapper {
+			--border-radius: {{ block.settings.radius }}px;
+			--border-width: {{ block.settings.border_thickness }}px;
+			--border-opacity: {{ block.settings.border_opacity | divided_by: 100.0 }};
+			--shadow-opacity: {{ block.settings.shadow_opacity | divided_by: 100.0 }};
+			{% assign smi_testimonial_shadow = block.settings.shadow | split: "," %}
+			--shadow-horizontal-offset: {{ smi_testimonial_shadow[0] }}px;
+			--shadow-vertical-offset: {{ smi_testimonial_shadow[1] }}px;
+			--shadow-blur-radius: {{ smi_testimonial_shadow[2] }}px;
+		}
+	{% endif %}
+</style>
+<div class="smi-testimonial-wrapper smi-content-wrapper smi-border smi-shadow">
+	{%- if images[block.settings.upload_icon] != blank -%}
+		<div class="smi-icon">
+			{{ images[block.settings.upload_icon] | image_url: width: 80, height: 80 | image_tag: loading: 'eager' }}
+		</div>
+	{%- else -%}
+		{% if block.settings.icon != 'none' and block.settings.icon != "" %}
+			<div class="smi-icon">
+				{%- render 'smi-custom-icons', icon: block.settings.icon -%}
+			</div>
+		{% endif %}
+	{%- endif -%}
+	{% if block.settings.content != blank %}
+		<div class="smi-testimonial-content smi-text-md smi-color-text-75">{{ block.settings.content }}</div>
+	{% endif %}
+	<div class="smi-author-content">
+		<div class="smi-author-avatar">
+			{%- if images[block.settings.author_image] != blank -%}
+				{{- images[block.settings.author_image] | image_url: width: 150 | image_tag: loading: 'lazy' -}}
+			{%- else -%}
+				{{- 'image' | placeholder_svg_tag: 'smi-placeholder-light' -}}
+			{%- endif -%}
+		</div>	
+		<div class="smi-author-name">
+			{%- if block.settings.author_name != '' -%}
+				<h5 class="{{ block.settings.text_size }}">{{- block.settings.author_name -}}</h5>
+			{%- endif -%}
+			{%- if block.settings.verified_buyer != 'none' -%}
+				<p class="smi-name__verified smi-d-flex smi-align-items-center smi-column-gap-xxs">
+					{% render 'smi-icons', icon: 'verify' %}
+					{%- if block.settings.verified_buyer == 'icon_with_text' -%}
+						{% assign percent = '10%' %}
+						<span class="smi-text-md">{{ 'smind.general.verified_buyer' | t }}</span>
+					{%- endif -%}
+				</p>
+			{%- endif -%}
+		</div>
+	</div>
+</div>
+						{% endif %}
+					</div>
+				{% endfor %}	
+			</div>
+		</div>
+	</div>
+</div>{%comment%}#includeFile#assets/smi-video.min.js,assets/smi-video.min.css,assets/smi-countdown-timer-new-2.min.js,snippets/smi-video.liquid,snippets/rating-icons.liquid#endIncludeFile#{%endcomment%}
+<div class="smi-d-none smi-pofds-itegm">&nbsp; </div>
+
+
+<script type="text/javascript">
+!function(){class e{sectionId=null;sectionEl=null;constructor(e){this.sectionId=e.replace("smi-",""),this.sectionEl=document.querySelector(`#${e}`),this.getHeroWidthImageAdapt(),this.copyCode()}getHeroWidthImageAdapt(){const e=this.sectionEl.querySelector(".smi-image-hero-wrapper");if(!e)return;const t=this.sectionEl.querySelector(".smi-hero-background");function updateWidth(){let o=t.offsetWidth;e.style.setProperty("--hero-bg-width",o+"px")}updateWidth(),window.addEventListener("resize",updateWidth)}copyCode(){this.sectionEl.querySelectorAll(".smi-block-promo_code").forEach((e=>{const t=e.querySelector(".smi-content-copy");if(t){e.querySelector(".smi-button-copy").addEventListener("click",(o=>{o.preventDefault();const n=e.querySelector(".tooltiptext"),i=n.getAttribute("data-text-copied");navigator.clipboard?.writeText(t.innerText),document.queryCommandSupported("copy")&&(document.execCommand("copy"),n.innerHTML=i)}))}}))}}const initialize=()=>{const t=document.getElementById("smi-{{ section.id }}");new e("smi-{{ section.id }}");let o=0;const n=setInterval((()=>{o++,"undefined"!=typeof SMI_Countdown_New_2&&(clearInterval(n),new SMI_Countdown_New_2(t)),o>=25&&clearInterval(n)}),10)};Shopify.designMode&&("complete"===document.readyState&&initialize(),document.addEventListener("smiReloadSection",initialize)),document.addEventListener("DOMContentLoaded",initialize)}();
+</script>

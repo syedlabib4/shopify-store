@@ -1,0 +1,34 @@
+{% comment %}#component#["settings/display-settings-2","settings/container-width-new","settings/section-margin","settings/design-mode"]#endcomponent#{% endcomment %}
+<style>
+    {% if block_color %}
+    {% endif %}
+	#shopify-section-{{ section.id }} {
+		--section-margin-sides: {{ section.settings.margin_sides }}px;
+--section-margin-sides-mobile: {{ section.settings.margin_sides_mobile }}px;
+		{% if  section.settings.custom_width == true and section.settings.full_width == 'container' %}
+--page-width: {{ section.settings.section_width }}px;
+{% endif %}
+	}
+    #shopify-section-{{ section.id }} .smi-section-divider-1 {
+        --divider-height: {{section.settings.divider_height}}px;
+        margin-top: calc(-1 * var(--divider-height));
+        z-index: 2;
+    }
+    #shopify-section-{{ section.id }} .smi-divider-line {
+        background: {{ section.settings.divider_color }};
+        height:  {{ section.settings.divider_height }}px;
+    }
+@media screen and (max-width: 767.8px){.smi-display-settings.smi-display-desktop{display:none !important}}@media screen and (min-width: 768px){.smi-display-settings.smi-display-mobile{display:none !important}}
+</style>
+<div id="smi-{{ section.id }}"
+     class="smi-{{ section.id }} smi-display-settings smi-display-{{ section.settings.display_on }} smi-section__inner  smi-section-divider-1"
+     data-section="divider-1"
+     data-name="✧Divider 1">
+    
+    <div class="smi-{{ section.settings.full_width }}" smind-key="full_width,divider_color" smind-attributes smind-attr-divider>
+        <div class="smi-divider-line">&nbsp;</div>
+    </div>
+</div>
+<div class="smi-d-none smi-pofds-itegm">&nbsp; </div>
+
+

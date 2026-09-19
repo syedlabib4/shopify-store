@@ -1,0 +1,500 @@
+<link href="{{ 'smi-rich-text-3.min.css' | asset_url }}" rel="stylesheet" type="text/css" media="screen" onload="this.onload=null;this.media='all'">
+{% comment %}#component#["settings/display-settings-2","settings/container-full_width","settings/content-settings","settings/section-padding","settings/section-margin","settings/heading.highlight-not-alignment","settings/buttons","blocks/background","settings/design-mode","settings/animation-settings","settings/heading.highlight","settings/image.vars","settings/image"]#endcomponent#{% endcomment %}
+<style>
+    {% if block_color %}
+    {% endif %}
+	{% assign colorblock = section.blocks | where: 'type', 'color' | first %}
+{% if colorblock %}
+	.smi-quick-view-1-modal-{{ section.id }}, #shopify-section-{{ section.id }},
+      #shopify-section-{{ section.id }} .smi-color-{{ section.settings.color_scheme }},
+      .smi-block-custom-color {
+		--color-background: {{ colorblock.settings.background_color | color_extract: 'red' }}, {{ colorblock.settings.background_color | color_extract: 'green' }},{{ colorblock.settings.background_color | color_extract: 'blue' }};
+		--color-background-alpha: {{ colorblock.settings.background_color | color_extract: 'alpha' | default: 1 }};
+        {% if colorblock.settings.background_gradient_color == blank %}
+            --gradient-background: {{ colorblock.settings.background_color }};
+        {% else %}
+            --gradient-background: {{ colorblock.settings.background_gradient_color }};
+        {% endif %}
+		{% if colorblock.settings.heading_color != blank and colorblock.settings.heading_color != 'rgba(0,0,0,0)' %}
+			--color-heading: {{ colorblock.settings.heading_color.red }}, {{ colorblock.settings.heading_color.green }},{{ colorblock.settings.heading_color.blue }};
+		{% endif %}	
+		--color-foreground-hex: {{ colorblock.settings.text_color }};
+        --color-foreground: {{ colorblock.settings.text_color | color_extract: 'red' }}, {{ colorblock.settings.text_color | color_extract: 'green' }},{{ colorblock.settings.text_color | color_extract: 'blue' }};
+		--color-subtext: {{ colorblock.settings.subtext_color.red }},{{ colorblock.settings.subtext_color.green }},{{ colorblock.settings.subtext_color.blue }};
+        --color-shadow: {{ colorblock.settings.shadow_color | color_extract: 'red' }}, {{ colorblock.settings.shadow_color | color_extract: 'green' }},{{ colorblock.settings.shadow_color | color_extract: 'blue' }};
+		--color-text-link: {{ colorblock.settings.link_color.red }}, {{ colorblock.settings.link_color.green }},{{ colorblock.settings.link_color.blue }};
+		{% if colorblock.settings.hover_link_color != blank and colorblock.settings.hover_link_color != 'rgba(0,0,0,0)' %}
+			--color-hover-link: {{ colorblock.settings.hover_link_color.red }}, {{ colorblock.settings.hover_link_color.green }},{{ colorblock.settings.hover_link_color.blue }};
+		{% else %}
+			--color-hover-link: {{ colorblock.settings.link_color.red }}, {{ colorblock.settings.link_color.green }},{{ colorblock.settings.link_color.blue }};
+		{% endif %}		
+		--color-button: {{ colorblock.settings.solid_background_button_color.red }}, {{ colorblock.settings.solid_background_button_color.green }},{{ colorblock.settings.solid_background_button_color.blue }};
+		--color-button-text: {{ colorblock.settings.solid_button_label_color.red }}, {{ colorblock.settings.solid_button_label_color.green }},{{ colorblock.settings.solid_button_label_color.blue }};
+		{% if colorblock.settings.solid_background_button_hover_color != blank and colorblock.settings.solid_background_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover: {{ colorblock.settings.solid_background_button_hover_color.red }}, {{ colorblock.settings.solid_background_button_hover_color.green }},{{ colorblock.settings.solid_background_button_hover_color.blue }};
+		{% else %}
+			--color-button-hover: {{ colorblock.settings.solid_background_button_color.red }}, {{ colorblock.settings.solid_background_button_color.green }},{{ colorblock.settings.solid_background_button_color.blue }};
+		{% endif %}		
+		{% if colorblock.settings.solid_button_label_hover_color != blank and colorblock.settings.solid_button_label_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-text: {{ colorblock.settings.solid_button_label_hover_color.red }}, {{ colorblock.settings.solid_button_label_hover_color.green }},{{ colorblock.settings.solid_button_label_hover_color.blue }};
+		{% else %}
+			--color-button-hover-text: {{ colorblock.settings.solid_button_label_color.red }}, {{ colorblock.settings.solid_button_label_color.green }},{{ colorblock.settings.solid_button_label_color.blue }};
+		{% endif %}		
+		--color-secondary-button-text: {{ colorblock.settings.outline_button_color.red }}, {{ colorblock.settings.outline_button_color.green }},{{ colorblock.settings.outline_button_color.blue }};
+		{% if colorblock.settings.outline_button_hover_color != blank and colorblock.settings.outline_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-border: {{ colorblock.settings.outline_button_hover_color.red }}, {{ colorblock.settings.outline_button_hover_color.green }},{{ colorblock.settings.outline_button_hover_color.blue }};
+		{% else %}
+			--color-button-hover-border: {{ colorblock.settings.outline_button_color.red }}, {{ colorblock.settings.outline_button_color.green }},{{ colorblock.settings.outline_button_color.blue }};
+		{% endif %}		
+		{% comment %} Inputs ────────── {% endcomment %}
+		{% comment %} {% if colorblock.settings.input_background_color != blank and colorblock.settings.input_background_color != 'rgba(0,0,0,0)' %}
+			--color-input-background: {{ colorblock.settings.input_background_color.red }}, {{ colorblock.settings.input_background_color.green }},{{ colorblock.settings.input_background_color.blue }};
+		{% endif %}
+		{% if colorblock.settings.input_color != blank and colorblock.settings.input_color != 'rgba(0,0,0,0)' %}
+			--color-input-color: {{ colorblock.settings.input_color.red }}, {{ colorblock.settings.input_color.green }},{{ colorblock.settings.input_color.blue }};
+		{% endif %}
+		{% if colorblock.settings.input_border_color != blank and colorblock.settings.input_border_color != 'rgba(0,0,0,0)' %}
+			--color-input-border: {{ colorblock.settings.input_border_color.red }}, {{ colorblock.settings.input_border_color.green }},{{ colorblock.settings.input_border_color.blue }};
+		{% endif %}
+		{% if colorblock.settings.input_border_hover_color != blank and colorblock.settings.input_border_hover_color != 'rgba(0,0,0,0)' %}
+			--color-input-border-hover: {{ colorblock.settings.input_border_hover_color.red }},{{ colorblock.settings.input_border_hover_color.green }},{{ colorblock.settings.input_border_hover_color.blue }};
+		{% else %}
+			--color-input-border-hover: {{ colorblock.settings.input_border_color.red }},{{ colorblock.settings.input_border_color.green }},{{ colorblock.settings.input_border_color.blue }};
+		{% endif %}	
+		 {% endcomment %}
+    }
+{% endif %}
+	#smi-{{ section.id }}, #shopify-section-{{ section.id }} {
+		{% if  section.settings.custom_width == true and section.settings.full_width == false %}
+--page-width: {{ section.settings.section_width }}px;
+{% endif %}
+        --section-padding-top: {{ section.settings.padding_top }}px;
+--section-padding-bottom: {{ section.settings.padding_bottom }}px;
+--section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+--section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+        --section-margin-sides: {{ section.settings.margin_sides }}px;
+--section-margin-sides-mobile: {{ section.settings.margin_sides_mobile }}px;
+		--content-max-width: {{ section.settings.content_max_width }}px;;
+		--content-alignment: {{ section.settings.content_alignment }};
+		--media-position: {{ section.settings.desktop_media_position }};
+		--color-highlight: {{ section.settings.color_highlight | color_extract: 'red' }}, {{ section.settings.color_highlight | color_extract: 'green' }}, {{ section.settings.color_highlight | color_extract: 'blue' }};
+		--line-clamp: {{ section.settings.max_lines | to_integer }};
+		--padding-content-y: {{ section.settings.top_bottom_padding | default: 24 }}px;
+		--padding-content-x: {{ section.settings.left_right_padding | default: 24 }}px;
+	}
+	@media (max-width: 767px) {
+		#smi-{{ section.id }} {
+			--padding-content-y: 16px;
+			--padding-content-x: 16px;
+		}
+	}
+	{% if section.settings.content_containers_style == true %}
+	#smi-{{ section.id }} .smi-content-wrapper {
+		--border-width: {{ section.settings.thickness }}px;
+		--border-opacity: {{ section.settings.opacity | divided_by: 100.0 }};
+		--border-radius: {{ section.settings.corner_radius }}px;
+	{% assign smi_content_shadow = section.settings.container_shadow | split: "," %} --shadow-horizontal-offset: {{ smi_content_shadow[0] }}px;
+		--shadow-vertical-offset: {{ smi_content_shadow[1] }}px;
+		--shadow-blur-radius: {{ smi_content_shadow[2] }}px;
+		--shadow-visible: {% if section.settings.container_shadow_opacity > 0 and section.settings.container_shadow != '0,0,0' %}1{% else %}0{% endif %};
+		--shadow-opacity: {{ section.settings.container_shadow_opacity | divided_by: 100.0  }};
+	}
+	{% endif %}
+	{% assign block_color = section.blocks | where: 'type', 'color' | first %}
+{% if block_color %}
+    #shopify-section-{{ section.id }} .smi-color-{{ section.settings.color_scheme }}{
+        --color-background: {{ block_color.settings.background_color | color_extract: 'red' }}, {{ block_color.settings.background_color | color_extract: 'green' }},{{ block_color.settings.background_color | color_extract: 'blue' }};
+        --color-background-alpha: {{ block_color.settings.background_color | color_extract: 'alpha' | default: 1 }};
+        {% if block_color.settings.background_gradient_color == blank %}
+            --gradient-background: {{ block_color.settings.background_color }};
+        {% else %}
+            --gradient-background: {{ block_color.settings.background_gradient_color }};
+        {% endif %}
+        --color-foreground: {{ block_color.settings.text_color | color_extract: 'red' }}, {{ block_color.settings.text_color | color_extract: 'green' }},{{ block_color.settings.text_color | color_extract: 'blue' }};
+        --color-shadow: {{ block_color.settings.shadow_color | color_extract: 'red' }}, {{ block_color.settings.shadow_color | color_extract: 'green' }},{{ block_color.settings.shadow_color | color_extract: 'blue' }};
+    }
+    #shopify-section-{{ section.id }} .smi-content-color.smi-color-{{ section.settings.content_color_scheme }} {
+		--color-background: {{ block_color.settings.content_background_color | color_extract: 'red' }}, {{ block_color.settings.content_background_color | color_extract: 'green' }},{{ block_color.settings.content_background_color | color_extract: 'blue' }};
+		{% if block_color.settings.content_background_gradient_color == blank %}
+            --gradient-background: {{ block_color.settings.content_background_color }};
+        {% else %}
+            --gradient-background: {{ block_color.settings.content_background_gradient_color }};
+        {% endif %}
+        --color-foreground: {{ block_color.settings.content_text_color | color_extract: 'red' }}, {{ block_color.settings.content_text_color | color_extract: 'green' }},{{ block_color.settings.content_text_color | color_extract: 'blue' }};
+        --color-subtext: {{ block_color.settings.content_subtext_color | color_extract: 'red' }}, {{ block_color.settings.content_subtext_color | color_extract: 'green' }},{{ block_color.settings.content_subtext_color | color_extract: 'blue' }};
+        --color-button: {{ block_color.settings.content_solid_background_button_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_background_button_color | color_extract: 'green' }},{{ block_color.settings.content_solid_background_button_color | color_extract: 'blue' }};
+        --color-button-text: {{ block_color.settings.content_solid_button_label_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_button_label_color | color_extract: 'green' }},{{ block_color.settings.content_solid_button_label_color | color_extract: 'blue' }};
+        --color-secondary-button-text: {{ block_color.settings.content_outline_button_color | color_extract: 'red' }}, {{ block_color.settings.content_outline_button_color | color_extract: 'green' }},{{ block_color.settings.content_outline_button_color | color_extract: 'blue' }};
+        --color-shadow: {{ block_color.settings.content_shadow_color | color_extract: 'red' }}, {{ block_color.settings.content_shadow_color | color_extract: 'green' }},{{ block_color.settings.content_shadow_color | color_extract: 'blue' }};
+		{% if block_color.settings.content_heading_color != blank and block_color.settings.content_heading_color != 'rgba(0,0,0,0)' %}
+			--color-heading: {{ block_color.settings.content_heading_color | color_extract: 'red' }}, {{ block_color.settings.content_heading_color | color_extract: 'green' }},{{ block_color.settings.content_heading_color | color_extract: 'blue' }};
+		{% endif %}
+		--color-text-link: {{ block_color.settings.content_link_color | color_extract: 'red' }}, {{ block_color.settings.content_link_color | color_extract: 'green' }},{{ block_color.settings.content_link_color | color_extract: 'blue' }};
+		{% if block_color.settings.content_hover_link_color != blank and block_color.settings.content_hover_link_color != 'rgba(0,0,0,0)' %}
+			--color-hover-link: {{ block_color.settings.content_hover_link_color | color_extract: 'red' }}, {{ block_color.settings.content_hover_link_color | color_extract: 'green' }},{{ block_color.settings.content_hover_link_color | color_extract: 'blue' }};
+		{% else %}
+			--color-hover-link: {{ block_color.settings.content_link_color | color_extract: 'red' }}, {{ block_color.settings.content_link_color | color_extract: 'green' }},{{ block_color.settings.content_link_color | color_extract: 'blue' }};
+		{% endif %}
+		{% if block_color.settings.content_solid_background_button_hover_color != blank and block_color.settings.content_solid_background_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover: {{ block_color.settings.content_solid_background_button_hover_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_background_button_hover_color | color_extract: 'green' }},{{ block_color.settings.content_solid_background_button_hover_color | color_extract: 'blue' }};
+		{% else %}
+			--color-button-hover: {{ block_color.settings.content_solid_background_button_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_background_button_color | color_extract: 'green' }},{{ block_color.settings.content_solid_background_button_color | color_extract: 'blue' }};
+		{% endif %}		
+		{% if block_color.settings.content_solid_button_label_hover_color != blank and block_color.settings.content_solid_button_label_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-text: {{ block_color.settings.content_solid_button_label_hover_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_button_label_hover_color | color_extract: 'green' }},{{ block_color.settings.content_solid_button_label_hover_color | color_extract: 'blue' }};
+		{% else %}
+			--color-button-hover-text: {{ block_color.settings.content_solid_button_label_color | color_extract: 'red' }}, {{ block_color.settings.content_solid_button_label_color | color_extract: 'green' }},{{ block_color.settings.content_solid_button_label_color | color_extract: 'blue' }};
+		{% endif %}	
+		{% if block_color.settings.content_outline_button_hover_color != blank and block_color.settings.content_outline_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-border: {{ block_color.settings.content_outline_button_hover_color | color_extract: 'red' }}, {{ block_color.settings.content_outline_button_hover_color | color_extract: 'green' }},{{ block_color.settings.content_outline_button_hover_color | color_extract: 'blue' }};
+		{% else %}
+			--color-button-hover-border: {{ block_color.settings.content_outline_button_color | color_extract: 'red' }}, {{ block_color.settings.content_outline_button_color | color_extract: 'green' }},{{ block_color.settings.content_outline_button_color | color_extract: 'blue' }};
+		{% endif %}	
+    }
+{% endif %}
+</style>
+{% assign block_color = section.blocks | where: 'type', 'color' | first %}
+{% liquid
+	assign content_alignment = section.settings.content_alignment
+	assign color_pos = 0
+	assign bkg_pos = 0
+	for block in section.blocks
+		if block.type == 'color'
+			assign color_pos = forloop.index
+		endif
+		if block.type == 'background'
+			assign bkg_pos = forloop.index
+		endif
+	endfor
+%}
+<div
+	id="smi-{{ section.id }}"
+	class="smi-{{ section.id }} smi-display-settings smi-display-{{ section.settings.display_on }}
+  smi-section__inner smi-gradient smi-section-rich-text-3 smi-color-{{ section.settings.color_scheme }} smi-content-settings"
+	data-section="rich-text-3" data-name="✧Rich text 3">
+	
+	{% liquid
+		assign background_block = section.blocks | where: 'type', 'background' | first
+		if background_block
+			render 'smi-background', section: section, is_reference: true
+		endif
+	%}
+	{% assign color_block = section.blocks | where: 'type', 'color' | first %}
+	<div class="smi-container-relative smi-container{%- if section.settings.full_width -%}-fluid{%- endif -%}">
+		{%-liquid
+    if settings.smi_animations_reveal_on_scroll != nil
+        assign animation_scroll = settings.smi_animations_reveal_on_scroll
+    else
+        assign global_settings = shop.metafields.smind.settings.value
+        assign animation_scroll = global_settings.revealOnScroll
+    endif
+-%}
+		<div
+			class="smi-container-detail smi-section-block-{{ section.id }} {% if section.settings.content_max_width < 576 %}min-container{% endif %} smi-content-position-{{ section.settings.content_position }} {%- if animation_scroll %} smi-scroll-trigger smi-animate--slide-in smi-animate-order-1 {% endif -%}"
+			data-block='{
+        "color_pos": "{{ color_pos }}",
+        "bkg_pos": "{{ bkg_pos }}",
+        "all_block": {{ section.blocks.size }}
+      }'
+		>
+			<div
+				class=" smi-overflow-hidden smi-content-wrapper smi-content-max-width smi-shadow smi-border">
+				<div
+					class="smi-rich-text-detail smi-gradient smi-content-color smi-color-{{ section.settings.content_color_scheme }}">
+					{% for block in section.blocks %}
+						<div class="smi-block-position-{{ forloop.index }}-{{ section.id }}
+            content-alignment-{{ section.settings.content_alignment -}}
+                {{- ' smi-rich-content' -}}
+                {%- if block.type == "icon_with_text" %} smi-rich-content-half-{{ block.settings.half_width_on_large_screen }}{% endif -%}
+                {%- liquid
+							if block.type != 'color' and block.type != 'background'
+								if block.type == 'button'
+									if forloop.index < section.blocks.size
+										echo ' smi-mb-lg'
+									endif
+								else
+									if forloop.index < section.blocks.size
+										echo ' smi-mb-lg'
+									endif
+								endif
+							endif
+						%}
+                {{- ' smi-block-type-' | append: block.type -}}" {{ block.shopify_attributes }}>
+							{% if block.type == 'heading' %}
+								{% assign style = section.settings.highlighted_style | strip %}
+								{% assign icon = section.settings.highlighted_label | strip %}
+								{% assign button_more_label = section.settings.read_more_button %}
+								{% assign button_less_label = section.settings.read_less_button %}
+								{% assign line_clamp = section.settings.max_lines | to_integer %}
+								{% assign text_truncate_expand = section.settings.text_truncate_expand %}
+								{% assign content_alignment = section.settings.content_alignment %}
+								{%-liquid
+    if settings.smi_animations_reveal_on_scroll != nil
+        assign animation_scroll = settings.smi_animations_reveal_on_scroll
+    else
+        assign global_settings = shop.metafields.smind.settings.value
+        assign animation_scroll = global_settings.revealOnScroll
+    endif
+-%}
+<div
+	class="smi-heading-component smi-heading-component--align-{{ block.settings.heading_alignment }}" {{- block.shopify_attributes -}} >
+	{% liquid
+		assign heading = block.settings.heading | strip
+		assign sub_heading = block.settings.sub_heading | strip
+		assign description = block.settings.description | strip
+		assign heading_tags = block.settings.heading_tags | default:'h2'
+		assign heading_size = block.settings.heading_size
+		assign sub_heading_size = block.settings.sub_heading_size
+	%}
+	{%- if style != 'none' -%}
+		{%- capture begin_tag -%}<em>{%- endcapture -%}
+		{%- assign heading = heading | replace: '<em>', begin_tag -%}
+		{%- if style == 'scribble' -%}
+			{%- capture end_tag -%}
+				{%- capture class -%}icon icon-{{ icon | handle }}{% if class != blank %} {{ class }}{% endif %}{%- endcapture -%}
+				{%- case icon -%}
+					{%- when 'circle' -%}
+						<svg class="{{ class }}" viewBox="0 0 800 350" stroke="currentColor" fill="none"
+							 role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+							<path transform="matrix(0.9791300296783447,0,0,0.9791300296783447,400,179)"
+								  stroke-linejoin="miter" stroke-miterlimit="4" stroke-width="20" pathLength="1"
+								  d=" M253,-161 C253,-161 -284.78900146484375,-201.4600067138672 -376,-21 C-469,163 67.62300109863281,174.2100067138672 256,121 C564,34 250.82899475097656,-141.6929931640625 19.10700035095215,-116.93599700927734" />
+						</svg>
+					{%- when 'basic-underline' -%}
+						<svg class="{{ class }}" viewBox="0 0 185 16" stroke="currentColor" fill="none"
+							 role="presentation" preserveAspectRatio="none"
+							 xmlns="http://www.w3.org/2000/svg">
+							<path
+								pathLength="1"
+								d="M3 11.8265C12.9368 5.94583 16.7463 4.66048 20.441 4.10607C21.8341 3.89704 22.3687 4.64393 22.1239 6.29062C21.8791 7.93731 20.8694 10.668 20.7279 11.9837C20.5864 13.2994 21.3437 13.1173 22.3649 12.6595C26.8163 10.6636 32.2826 8.35105 37.9165 6.77332C41.719 5.70846 45.065 5.57623 57.572 5.3004C69.317 5.04138 92.041 5.20662 104.124 5.02457C116.206 4.84253 116.963 4.47843 127.451 4.29087C137.938 4.10331 158.133 4.10331 169.042 3.92126C179.95 3.73922 180.96 3.37512 182 3"
+								stroke-width="5" stroke-linecap="round" />
+						</svg>
+					{%- when 'sketch-underline' -%}
+						<svg class="{{ class }}" viewBox="-158.17 -22.0172 289.2 53.8" stroke="currentColor" fill="none"
+							 role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+							<path stroke-linecap="round" stroke-width="8" pathLength="1"
+								  d="M -153.17 20.736 C -153.17 20.736 -135 -1 -118 -1 C -99 -1 -136.093 33.632 -117 26 C -105 18 -80 5 -74 1 C -51 -10 -63 9 -58.375 20.387 C -54.89 29.449 -26 3 -9 -1 C 14 -8 -17.599 24.918 1.917 22.827 C 21.434 20.735 37 3 49 0 C 62 -3 55.24 32.585 75 23 C 95 12 95 -1 114 -2" />
+						</svg>
+					{%- when 'squiggle-underline' -%}
+						<svg class="{{ class }}" viewBox="-347 -30.1947 694 96.19" stroke="currentColor" fill="none"
+							 role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+							<path stroke-linecap="round" stroke-width="20" pathLength="1"
+								  d="M-335,54 C-335,54 -171,-58 -194,-3 C-217,52 -224.1199951171875,73.552001953125 -127,11 C-68,-27 -137,50 -33,42 C31.43899917602539,37.042999267578125 147.14700317382812,-29.308000564575195 335,2" />
+						</svg>
+					{%- when 'squiggle-underline-2' -%}
+						<svg class="{{ class }}" viewBox="-320 -70.8161 640.4 59.82" stroke="currentColor" fill="none"
+							 role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+							<path stroke-linecap="round" stroke-width="5" pathLength="1"
+								  d="M-300,-56 C-50,-72 298,-65 300,-59 C332,-53 -239,-36 -255,-27 C-271,-18 -88,-24 91,-20" />
+						</svg>
+				{%- endcase -%}
+				</em>{%- endcapture -%}
+			{%- assign heading = heading | replace: '</em>', end_tag -%}
+		{%- endif -%}
+	{%- endif -%}
+	<div class="smi-heading-inner
+    {%- if animation_scroll %} smi-scroll-trigger smi-animate--slide-in{% endif -%}">
+		{%- assign sub_heading = block.settings.sub_heading | strip -%}
+{%- assign sub_heading_size = blank -%}
+{% if block.settings.sub_heading_size != blank %}
+	{%- assign sub_heading_size = '-mb ' | append:block.settings.sub_heading_size  | prepend: block.settings.sub_heading_size -%}
+{% endif %}
+{% if sub_heading != blank %}
+    <p class="{% if sub_heading_size != blank %}{{sub_heading_size}}{% else %}smi-text-sub{% endif %} smi-mb-xs smi-heading-component__subheading" smind-key="sub_heading" smind-attributes smind-attr-text>{{- sub_heading -}}</p>
+{% endif %}
+		{%- assign description = block.settings.description | strip -%}
+		{% if heading != blank %}
+			<{{heading_tags}} class="{{ heading_size }} {% if description != blank %}smi-mb-sm{% endif %} smi-heading-component__heading  smi-highlighted-text"
+				is="highlighted-text" data-style="{{ style }}"
+				>{{- heading -}}</{{heading_tags}}>
+		{% endif %}
+		{% if text_truncate_expand %}
+			{%- assign description = block.settings.description | strip -%}
+{%- assign description_size = blank -%}
+{% if block.settings.description_size != blank %}
+	{%- assign description_size = '-mb ' | append:block.settings.description_size  | prepend: block.settings.description_size -%}
+{% endif %}
+{% if description != blank %}
+	<div id="{{ block.id }}-description"
+		 class="{% if description_size != blank %}{{description_size}}{% else %}smi-text-md{% endif %} smi-heading-component__description smi-format-content smi-content-truncated"
+		 data-line-clamp="{{ line_clamp }}"
+		 >{{ description }}</div>
+	<div class="content-alignment-{{ content_alignment | default: "center" }}">
+		<div class="smi-component-buttons smi-button-wrapper" data-truncated-target="{{ block.id }}-description">
+			{% if button_more_label != blank %}
+				<a
+					href="#{{ section.id }}"
+					class="smi-button smi-button--first smi-button-show-more smi-text-button smi-button--text
+                {{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' -}}
+                {{- ' smi-border smi-shadow' -}}">
+            <span>
+                {{- button_more_label | escape -}}
+            </span>
+				</a>
+			{% endif %}
+			{% if button_less_label != blank %}
+				<a
+					href="#{{ section.id }}"
+					class="smi-button smi-button--first smi-button-show-less smi-text-button smi-button--text
+                {{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' -}}
+                {{- ' smi-border smi-shadow' -}}">
+            <span>
+                {{- button_less_label | escape -}}
+            </span>
+				</a>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}
+		{% else %}
+			{%- assign description = block.settings.description | strip -%}
+{%- assign description_size = blank -%}
+{% if block.settings.description_size != blank %}
+	{%- assign description_size = '-mb ' | append:block.settings.description_size  | prepend: block.settings.description_size -%}
+{% endif %}
+{% if description != blank %}
+    <div class="{% if description_size != blank %}{{description_size}}{% else %}smi-text-md{% endif %} smi-heading-component__description smi-format-content" smind-key="description" smind-attributes smind-attr-text>{{ description }}</div>
+{% endif %}
+		{% endif %}
+	</div>
+</div>
+							{% endif %}
+							{% if block.type == 'button' %}
+								<div class="smi-component-buttons smi-button-wrapper
+	{% if block.settings.second_button_style contains 'only_arrow' or block.settings.first_button_style contains 'only_arrow' %} smi-has-only-icon{% endif %}
+    {% if block.settings.button_full_width == true %} smi-component-buttons-full-width{% endif %}
+    {% unless block.settings.first_button_style contains 'text' or block.settings.second_button_style contains 'text' %} smi-component-buttons--same-width{% endunless %}" smind-key="first_button_label,first_button_link,second_button_label,second_button_link,button_full_width,button_size_mobile,second_button_style" smind-attributes smind-attr-button>
+    {% liquid
+    assign button_label = block.settings.first_button_label
+    assign button_style = block.settings.first_button_style
+    assign button_link = block.settings.first_button_link
+%}
+{% if button_label != blank %}
+    <a
+            href="{{- button_link -}}"
+            class="smi-button smi-button--first smi-text-button smi-button--{{ button_style | split: '_' | first -}}
+                {%- if button_style contains 'arrow' %} smi-has-icon{% endif %}
+				{%- if button_style contains 'only_arrow' %} smi-only-icon{% endif %}
+                {{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' -}}
+                {{- ' smi-border smi-shadow' -}}">
+			{% unless  button_style contains 'only_arrow' %}	
+				<span>
+					{{- button_label | escape -}}
+				</span>
+			{% endunless %}
+        {% if button_style contains 'arrow' %}
+            <div class="smi-d-flex smi-align-content-center">
+                {% render 'smi-icons', icon: 'arrow-right-2' %}
+            </div>
+        {% endif %}
+    </a>
+{% endif %}
+    {% liquid
+    assign button_label = block.settings.second_button_label
+    assign button_style = block.settings.second_button_style
+    assign button_link = block.settings.second_button_link
+%}
+{% if button_label != blank %}
+    <a
+		href="{{- button_link -}}"
+		class="smi-button smi-button--second smi-text-button smi-button--{{ button_style | split: '_' | first -}}
+			{%- if button_style contains 'arrow' %} smi-has-icon{% endif %}
+			{%- if button_style contains 'only_arrow' %} smi-only-icon{% endif %}
+			{{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' -}}
+			{{- ' smi-border smi-shadow' -}}">
+		{% unless  button_style contains 'only_arrow' %}	
+			<span>
+				{{- button_label | escape -}}
+			</span>
+		{% endunless %}
+        {% if button_style contains 'arrow' %}
+            <div class="smi-d-flex smi-align-content-center">
+                {% render 'smi-icons', icon: 'arrow-right-2' %}
+            </div>
+        {% endif %}
+    </a>
+{% endif %}
+</div>
+							{% endif %}
+							{% if block.type == 'spacer' %}
+								<style>
+									{{ block.id | prepend:"#" }}.smi-spacer {
+										width: 100%;
+										height: {{ block.settings.spacer_mobile_size | default: 24 }}px;
+									}
+									@media (min-width: 768px) {
+										{{ block.id | prepend:"#" }}.smi-spacer {
+											width: 100%;
+											height: {{ block.settings.spacer_desktop_size | default: 48 }}px;
+										}
+									}
+								</style>
+								<div id="{{ block.id }}" class="smi-spacer"></div>
+							{% endif %}
+							{% if block.type == 'image' %}
+								{% assign img_width = block.settings.image_width %}
+								{%- liquid
+									assign img_classes = 'smi-media-wrapper '
+									assign content_img = block.settings.heading | strip
+									if block.settings.use_media_settings
+										assign img_classes = img_classes | append: " smi-media-settings smi-border smi-shadow "
+									endif
+									assign placeholder_img_classes = img_classes | append: ' placeholder-img'
+								-%}
+								<div
+									class="smi-component-blocks-image smi-component-blocks-image-{{ block.id }}  {{ settings.smi_animations_hover_image | default: shop.metafields.smind.settings.value.imageHoverEffect | default: 'none' | prepend: ' smi-hover-image-' }}">
+									{% if block.settings.heading != blank and block.settings.heading != "" and block.settings.heading != " " %}
+										<p class="smi-text-md smi-color-text-75 {% if images[block.settings.upload_checkout] != blank %} smi-mb-xs {% endif %}">
+											{{ block.settings.heading }}
+										</p>
+									{% endif %}
+									<style>
+										.smi-component-blocks-image-{{ block.id }} {
+											--media-width: {{ img_width }}px;
+										}
+									</style>
+									<div class="{{ img_classes }} block-image-container" >
+										{%- if images[block.settings.upload_checkout] != blank -%}
+											{% liquid
+												assign image_object = images[block.settings.upload_checkout]
+												assign item_mobile = 1
+												assign item_tablet = 1
+												assign item_desktop = 1
+												assign image_width = img_width
+												assign image_classes = settings.smi_animations_hover_image | default: shop.metafields.smind.settings.value.imageHoverEffect | default: 'none' | prepend: ' smi-hover-image-'
+											%}
+{% liquid
+    unless image_width
+        assign image_width = 1600
+    endunless
+    unless sizes
+        assign percent_item_mobile = 100 | divided_by: item_mobile | default: 100
+        assign percent_item_tablet = 100 | divided_by: item_tablet | default: 100
+        assign percent_item_desktop = 100 | divided_by: item_desktop | default: 100
+        assign sizes = '(max-width: 767px)' | append: percent_item_mobile | append: 'vw, (max-width: 991px) ' | append: percent_item_tablet | append: 'vw, ' | append: percent_item_desktop | append: 'vw'
+    endunless
+%} 
+{{
+  image_object
+  | image_url: width: image_width
+  | image_tag: class: image_classes, widths: '400,500,600,700,800,1000,1200,1400,1600,1900,2500', sizes: sizes
+}}
+										{%- else -%}
+											{{ 'image' | placeholder_svg_tag: 'smi-placeholder-light' }}
+										{%- endif -%}
+									</div>
+								</div>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="smi-d-none smi-pofds-itegm">&nbsp; </div>
+
+
+<script type="text/javascript">
+!function(){"use strict";class e{sectionEl=null;observer=null;highlightedElements=[];constructor(e){this.sectionEl=document.getElementById(e),this.initAnimation(),this.initShowMoreContent()}initShowMoreContent(){this.sectionEl.querySelectorAll(".smi-content-truncated").forEach((e=>{const t=e.id,s=this.sectionEl.querySelector(`[data-truncated-target="${t}"]`);if(!s)return;const i=s.querySelector(".smi-button-show-more"),n=s.querySelector(".smi-button-show-less");if(!i||!n)return;const o=parseFloat(getComputedStyle(e).lineHeight)*(parseInt(e.dataset.lineClamp)+1||5);e.scrollHeight<=o?(i.style.display="none",n.style.display="none"):(i.style.display="block",n.style.display="none"),i.addEventListener("click",(t=>{t.preventDefault(),e.classList.add("smi-expanded"),i.style.display="none",n.style.display="block"})),n.addEventListener("click",(t=>{t.preventDefault(),e.classList.remove("smi-expanded"),i.style.display="block",n.style.display="none"}))}))}initAnimation(){this.sectionEl&&(this.highlightedElements=this.sectionEl.querySelectorAll(".smi-highlighted-text"),0!==this.highlightedElements.length&&(this.observer=new IntersectionObserver(((e,t)=>{e.forEach((e=>{e.isIntersecting&&(e.target.classList.add("smi-in-view"),t.unobserve(e.target))}))}),{threshold:.1}),this.highlightedElements.forEach((e=>{this.observer.observe(e)}))))}destroy(){this.observer&&this.observer.disconnect()}}const initialize=()=>{new e("smi-{{ section.id }}")};Shopify.designMode&&("complete"===document.readyState&&initialize(),document.addEventListener("smiReloadSection",initialize)),document.addEventListener("DOMContentLoaded",initialize)}();
+</script>

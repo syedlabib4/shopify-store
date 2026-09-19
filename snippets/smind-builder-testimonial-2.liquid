@@ -1,0 +1,513 @@
+{% comment %}#component#["settings/display-settings-2","settings/container-full_width","settings/heading","settings/slider-arrows","settings/slider-dots-v2","settings/section-padding","settings/section-margin","settings/testimonial-block","blocks/background","settings/design-mode","settings/animation-settings","layout/slider","settings/image.vars"]#endcomponent#{% endcomment %}
+{% comment %}#component#["settings/display-settings-2","settings/container-full_width","settings/heading","settings/slider-arrows","settings/slider-dots-v2","settings/section-padding","settings/section-margin","settings/testimonial-block","blocks/background","settings/design-mode","settings/animation-settings","layout/slider","settings/image.vars"]#endcomponent#{% endcomment %}
+<style>
+    {% if block_color %}
+    {% endif %}
+  #shopify-section-{{ section.id }}{
+	  {% if  section.settings.custom_width == true and section.settings.full_width == false %}
+--page-width: {{ section.settings.section_width }}px;
+{% endif %}
+      --section-padding-top: {{ section.settings.padding_top }}px;
+--section-padding-bottom: {{ section.settings.padding_bottom }}px;
+--section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+--section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-margin-sides: {{ section.settings.margin_sides }}px;
+--section-margin-sides-mobile: {{ section.settings.margin_sides_mobile }}px;
+      --heading-alignment: {%- liquid
+    case  section.settings.heading_alignment
+        when 'left'
+         echo 'start'
+        when 'right'
+         echo 'end'
+        else
+         echo 'center'
+    endcase
+-%};
+      --content-alignment: {{ section.settings.content_alignment }};
+  }
+  {% assign colorblock = section.blocks | where: 'type', 'color' | first %}
+{% if colorblock %}
+	.smi-quick-view-1-modal-{{ section.id }}, #shopify-section-{{ section.id }},
+      #shopify-section-{{ section.id }} .smi-color-{{ section.settings.color_scheme }},
+      .smi-block-custom-color {
+		--color-background: {{ colorblock.settings.background_color | color_extract: 'red' }}, {{ colorblock.settings.background_color | color_extract: 'green' }},{{ colorblock.settings.background_color | color_extract: 'blue' }};
+		--color-background-alpha: {{ colorblock.settings.background_color | color_extract: 'alpha' | default: 1 }};
+        {% if colorblock.settings.background_gradient_color == blank %}
+            --gradient-background: {{ colorblock.settings.background_color }};
+        {% else %}
+            --gradient-background: {{ colorblock.settings.background_gradient_color }};
+        {% endif %}
+		{% if colorblock.settings.heading_color != blank and colorblock.settings.heading_color != 'rgba(0,0,0,0)' %}
+			--color-heading: {{ colorblock.settings.heading_color | color_extract: 'red' }}, {{ colorblock.settings.heading_color | color_extract: 'green' }},{{ colorblock.settings.heading_color | color_extract: 'blue' }};
+		{% endif %}	
+		--color-foreground-hex: {{ colorblock.settings.text_color }};
+        --color-foreground: {{ colorblock.settings.text_color | color_extract: 'red' }}, {{ colorblock.settings.text_color | color_extract: 'green' }},{{ colorblock.settings.text_color | color_extract: 'blue' }};
+		--color-subtext: {{ colorblock.settings.subtext_color | color_extract: 'red' }},{{ colorblock.settings.subtext_color | color_extract: 'green' }},{{ colorblock.settings.subtext_color | color_extract: 'blue' }};
+        --color-shadow: {{ colorblock.settings.shadow_color | color_extract: 'red' }}, {{ colorblock.settings.shadow_color | color_extract: 'green' }},{{ colorblock.settings.shadow_color | color_extract: 'blue' }};
+		--color-text-link: {{ colorblock.settings.link_color | color_extract: 'red' }}, {{ colorblock.settings.link_color | color_extract: 'green' }},{{ colorblock.settings.link_color | color_extract: 'blue' }};
+		{% if colorblock.settings.hover_link_color != blank and colorblock.settings.hover_link_color != 'rgba(0,0,0,0)' %}
+			--color-hover-link: {{ colorblock.settings.hover_link_color | color_extract: 'red' }}, {{ colorblock.settings.hover_link_color | color_extract: 'green' }},{{ colorblock.settings.hover_link_color | color_extract: 'blue' }};
+		{% else %}
+			--color-hover-link: {{ colorblock.settings.link_color | color_extract: 'red' }}, {{ colorblock.settings.link_color | color_extract: 'green' }},{{ colorblock.settings.link_color | color_extract: 'blue' }};
+		{% endif %}		
+		--color-button: {{ colorblock.settings.solid_background_button_color | color_extract: 'red' }}, {{ colorblock.settings.solid_background_button_color | color_extract: 'green' }},{{ colorblock.settings.solid_background_button_color | color_extract: 'blue' }};
+		--color-button-text: {{ colorblock.settings.solid_button_label_color | color_extract: 'red' }}, {{ colorblock.settings.solid_button_label_color | color_extract: 'green' }},{{ colorblock.settings.solid_button_label_color | color_extract: 'blue' }};
+		{% if colorblock.settings.solid_background_button_hover_color != blank and colorblock.settings.solid_background_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover: {{ colorblock.settings.solid_background_button_hover_color.red }}, {{ colorblock.settings.solid_background_button_hover_color.green }},{{ colorblock.settings.solid_background_button_hover_color.blue }};
+		{% else %}
+			--color-button-hover: {{ colorblock.settings.solid_background_button_color | color_extract: 'red' }}, {{ colorblock.settings.solid_background_button_color | color_extract: 'green' }},{{ colorblock.settings.solid_background_button_color | color_extract: 'blue' }};
+		{% endif %}		
+		{% if colorblock.settings.solid_button_label_hover_color != blank and colorblock.settings.solid_button_label_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-text: {{ colorblock.settings.solid_button_label_hover_color.red }}, {{ colorblock.settings.solid_button_label_hover_color.green }},{{ colorblock.settings.solid_button_label_hover_color.blue }};
+		{% else %}
+			--color-button-hover-text: {{ colorblock.settings.solid_button_label_color | color_extract: 'red' }}, {{ colorblock.settings.solid_button_label_color | color_extract: 'green' }},{{ colorblock.settings.solid_button_label_color | color_extract: 'blue' }};
+		{% endif %}		
+		--color-secondary-button-text: {{ colorblock.settings.outline_button_color.red }}, {{ colorblock.settings.outline_button_color.green }},{{ colorblock.settings.outline_button_color.blue }};
+		{% if colorblock.settings.outline_button_hover_color != blank and colorblock.settings.outline_button_hover_color != 'rgba(0,0,0,0)' %}
+			--color-button-hover-border: {{ colorblock.settings.outline_button_hover_color.red }}, {{ colorblock.settings.outline_button_hover_color.green }},{{ colorblock.settings.outline_button_hover_color.blue }};
+		{% else %}
+			--color-button-hover-border: {{ colorblock.settings.outline_button_color.red }}, {{ colorblock.settings.outline_button_color.green }},{{ colorblock.settings.outline_button_color.blue }};
+		{% endif %}		
+		{% comment %} Inputs ────────── {% endcomment %}
+		{% comment %} {% if colorblock.settings.input_background_color != blank and colorblock.settings.input_background_color != 'rgba(0,0,0,0)' %}
+			--color-input-background: {{ colorblock.settings.input_background_color.red }}, {{ colorblock.settings.input_background_color.green }},{{ colorblock.settings.input_background_color.blue }};
+		{% endif %}
+		{% if colorblock.settings.input_color != blank and colorblock.settings.input_color != 'rgba(0,0,0,0)' %}
+			--color-input-color: {{ colorblock.settings.input_color.red }}, {{ colorblock.settings.input_color.green }},{{ colorblock.settings.input_color.blue }};
+		{% endif %}
+		{% if colorblock.settings.input_border_color != blank and colorblock.settings.input_border_color != 'rgba(0,0,0,0)' %}
+			--color-input-border: {{ colorblock.settings.input_border_color.red }}, {{ colorblock.settings.input_border_color.green }},{{ colorblock.settings.input_border_color.blue }};
+		{% endif %}
+		{% if colorblock.settings.input_border_hover_color != blank and colorblock.settings.input_border_hover_color != 'rgba(0,0,0,0)' %}
+			--color-input-border-hover: {{ colorblock.settings.input_border_hover_color.red }},{{ colorblock.settings.input_border_hover_color.green }},{{ colorblock.settings.input_border_hover_color.blue }};
+		{% else %}
+			--color-input-border-hover: {{ colorblock.settings.input_border_color.red }},{{ colorblock.settings.input_border_color.green }},{{ colorblock.settings.input_border_color.blue }};
+		{% endif %}	
+		 {% endcomment %}
+    }
+{% endif %}
+  {% if colorblock %}
+  #smi-{{ section.id }} .smi-item {
+    --color-background: {{ colorblock.settings.content_background_color | color_extract: 'red' }}, {{ colorblock.settings.content_background_color | color_extract: 'green' }},{{ colorblock.settings.content_background_color | color_extract: 'blue' }};        
+    {% if colorblock.settings.content_background_gradient_color == blank %}
+        --gradient-background: {{ colorblock.settings.content_background_color }};
+    {% else %}
+        --gradient-background: {{ colorblock.settings.content_background_gradient_color }};
+    {% endif %}
+	{% if colorblock.settings.content_heading_color != blank and colorblock.settings.content_heading_color != 'rgba(0,0,0,0)' %}
+		--color-heading: {{ colorblock.settings.content_heading_color | color_extract: 'red' }}, {{ colorblock.settings.content_heading_color | color_extract: 'green' }},{{ colorblock.settings.content_heading_color | color_extract: 'blue' }};
+	{% else %}
+		--color-heading: {{ colorblock.settings.text_color | color_extract: 'red' }}, {{ colorblock.settings.text_color | color_extract: 'green' }},{{ colorblock.settings.text_color | color_extract: 'blue' }};
+	{% endif %}	
+    --color-foreground: {{ colorblock.settings.content_text_color | color_extract: 'red' }}, {{ colorblock.settings.content_text_color | color_extract: 'green' }},{{ colorblock.settings.content_text_color | color_extract: 'blue' }};
+	--color-text-link: {{ colorblock.settings.content_link_color | color_extract: 'red' }}, {{ colorblock.settings.content_link_color | color_extract: 'green' }},{{ colorblock.settings.content_link_color | color_extract: 'blue' }};
+		{% if colorblock.settings.content_hover_link_color != blank and colorblock.settings.content_hover_link_color != 'rgba(0,0,0,0)' %}
+			--color-hover-link: {{ colorblock.settings.content_hover_link_color | color_extract: 'red' }}, {{ colorblock.settings.content_hover_link_color | color_extract: 'green' }},{{ colorblock.settings.content_hover_link_color | color_extract: 'blue' }};
+		{% else %}
+			--color-hover-link: {{ colorblock.settings.content_link_color | color_extract: 'red' }}, {{ colorblock.settings.content_link_color | color_extract: 'green' }},{{ colorblock.settings.content_link_color | color_extract: 'blue' }};
+		{% endif %}	
+  }
+  {% endif %}
+@media screen and (max-width: 767.8px){.smi-display-settings.smi-display-desktop{display:none !important}}@media screen and (min-width: 768px){.smi-display-settings.smi-display-mobile{display:none !important}}.smi-component-testimonial-block .smi-star-component{line-height:0}.smi-component-testimonial-block .smi-star-component span{line-height:0}.smi-component-testimonial-block .smi-star-component svg path{fill:#f8a427}.smi-component-testimonial-block .smi-star-component .smi-star-component-small svg{width:calc(20px*var(--icon-scale, 1));height:calc(20px*var(--icon-scale, 1))}.smi-component-testimonial-block .smi-star-component .smi-star-component-medium svg{width:calc(24px*var(--icon-scale, 1));height:calc(24px*var(--icon-scale, 1))}.smi-component-testimonial-block .smi-star-component .smi-star-component-large svg{width:calc(32px*var(--icon-scale, 1));height:calc(32px*var(--icon-scale, 1))}.smi-component-testimonial-block .avatar{height:70px;width:70px;object-fit:cover;vertical-align:bottom;box-sizing:border-box}.smi-component-testimonial-block .round{border-radius:5000px}.smi-section-testimonial-2 .smi-item{text-align:var(--content-alignment)}.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-round,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-default,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-blob-wrapper{width:50px;height:50px}.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-round img,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-round svg,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-default img,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-default svg,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-blob-wrapper img,.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-blob-wrapper svg{width:100%;height:100%;object-fit:cover}.smi-section-testimonial-2 .smi-item__author .smi-author-image img,.smi-section-testimonial-2 .smi-item__author .smi-author-image svg{max-width:50px;max-height:50px}.smi-section-testimonial-2 .smi-item__author .smi-author-image.smi-round .smi-media-settings{border-radius:50%}.smi-section-testimonial-2 .smi-item__author .smi-author-info.smi-text-align-left{text-align:left !important}
+</style>
+<div class="smi-d-none smi-pofds-itegm">&nbsp; </div>
+{%-liquid 
+    assign object_loop = section.blocks | where: 'type', 'testimonial_block'
+    assign border_style = 'content'
+    assign change_slides_every = section.settings.change_slide_every
+    assign number_of_columns_on_desktop = section.settings.number_of_item
+    assign number_of_columns_on_mobile = 1
+-%}
+<div id="smi-{{ section.id }}" class="smi-{{ section.id }} smi-display-settings smi-display-{{ section.settings.display_on }} smi-section__inner smi-gradient smi-section-testimonial-2 smi-color-{{ section.settings.color_scheme }} smi-link-wrapper smi-overflow-x-clip" data-section="testimonial-2" data-name="✧Testimonial 2">
+    
+    {% liquid
+    assign background_block = section.blocks | where: 'type', 'background' | first
+    if background_block
+      render 'smi-background', section: section, is_reference: true
+    endif
+  %}
+    <div class="smi-container">{%-liquid
+    if settings.smi_animations_reveal_on_scroll != nil
+        assign animation_scroll = settings.smi_animations_reveal_on_scroll
+    else
+        assign global_settings = shop.metafields.smind.settings.value
+        assign animation_scroll = global_settings.revealOnScroll
+    endif
+-%}
+<div
+	class="smi-heading-component smi-heading-component--align-{{ section.settings.heading_alignment }} smi-link-wrapper" {{- block.shopify_attributes -}}
+	style="--heading-alignment: {{ section.settings.heading_alignment }}">
+	{% liquid
+		assign heading = section.settings.heading | strip
+		assign sub_heading = section.settings.sub_heading | strip
+		assign description = section.settings.description | strip
+		assign heading_tags = section.settings.heading_tags | default:'h2'
+		assign heading_size = section.settings.heading_size
+	%}
+	<div class="smi-heading-inner
+    {%- if animation_scroll %} smi-scroll-trigger smi-animate--slide-in{% endif -%}
+    {%- if heading != blank or sub_heading != blank or description != blank %} smi-mb-xxl{% endif -%}
+    ">
+		{%- assign sub_heading = section.settings.sub_heading | strip -%}
+{%- assign sub_heading_size = blank -%}
+{% if section.settings.sub_heading_size != blank %}
+	{%- assign sub_heading_size = '-mb ' | append:section.settings.sub_heading_size  | prepend: section.settings.sub_heading_size -%}
+{% endif %}
+{% if sub_heading != blank %}
+    <p class="{% if sub_heading_size != blank %}{{sub_heading_size}}{% else %}smi-text-sub{% endif %} smi-mb-xs smi-heading-component__subheading" smind-key="sub_heading" smind-attributes smind-attr-text>{{- sub_heading -}}</p>
+{% endif %}
+		{%- assign description = section.settings.description | strip -%}
+{%- assign heading = section.settings.heading | strip -%}
+{% if heading != blank %}
+    <{{heading_tags}} class="{{ heading_size }} {% if description != blank %}smi-mb-sm{% endif %} smi-heading-component__heading" smind-key="heading" smind-attributes smind-attr-text>{{- heading -}}</{{heading_tags}}>
+{% endif %}
+		{%- assign description = section.settings.description | strip -%}
+{%- assign description_size = blank -%}
+{% if section.settings.description_size != blank %}
+	{%- assign description_size = '-mb ' | append:section.settings.description_size  | prepend: section.settings.description_size -%}
+{% endif %}
+{% if description != blank %}
+    <div class="{% if description_size != blank %}{{description_size}}{% else %}smi-text-md{% endif %} smi-heading-component__description smi-format-content" smind-key="description" smind-attributes smind-attr-text>{{ description }}</div>
+{% endif %}
+	</div>
+</div>
+</div>
+    {%-liquid
+    if settings.smi_animations_reveal_on_scroll != nil
+        assign animation_scroll = settings.smi_animations_reveal_on_scroll
+    else
+        assign global_settings = shop.metafields.smind.settings.value
+        assign animation_scroll = global_settings.revealOnScroll
+    endif
+-%}
+    <div class="has-one-column-option smi-container{% if section.settings.full_width %}-fluid{% endif %} smi-p-relative {%- if animation_scroll %} smi-scroll-trigger smi-animate--slide-in smi-animate-order-1 {% endif -%}">
+{% liquid
+  if object_limit == null
+    assign object_length = object_loop | size | times: 1
+  else
+    assign object_length = object_limit | times: 1
+  endif
+  case border_style
+    when 'none'
+      assign border_classes = ' '
+    when 'content'
+      assign border_classes = ' smi-content-wrapper'
+    when 'blog'
+      assign border_classes = ' smi-article-card-wrapper'
+      if settings.smi_blog_card_style
+        assign card_style = settings.smi_blog_card_style
+      else
+        assign global_settings = shop.metafields.smind.settings.value
+        assign card_style = global_settings.blogCardStyle | default: 'standard'
+      endif
+      if card_style == 'standard'
+        assign show_border = false
+      endif
+    when 'product'
+      assign border_classes = ' smi-product-card-wrapper'
+	  if section.settings.card_style
+	  	assign card_style = section.settings.card_style
+	  else
+		if settings.smi_card_style
+			assign card_style = settings.smi_card_style
+		else
+			assign global_settings = shop.metafields.smind.settings.value
+			assign card_style = global_settings.productCardStyle | default: 'standard'
+		endif
+	  endif
+      if card_style == 'standard'
+        assign show_border = false
+      endif
+    else
+      assign border_classes = ' smi-media-wrapper'
+  endcase
+  if enable_spacing_between_items == null
+    assign enable_spacing_between_items = section.settings.enable_spacing_between_items
+  endif
+  if number_of_columns_on_desktop == null
+    assign number_of_columns_on_desktop = section.settings.number_of_columns_on_desktop
+  endif
+  assign number_of_columns_on_desktop = number_of_columns_on_desktop | times: 1
+  if number_of_columns_on_mobile == null
+    assign number_of_columns_on_mobile = section.settings.number_of_columns_on_mobile
+  endif
+  assign number_of_columns_on_mobile = number_of_columns_on_mobile | times: 1
+  if auto_rotate_slides == null
+    assign auto_rotate_slides = section.settings.auto_rotate_slides
+  endif
+  if change_slides_every == null
+    assign change_slides_every = section.settings.change_slides_every
+  endif
+  if slider_overflow == null
+    assign slider_overflow = section.settings.slider_overflow
+  endif
+  if show_view_all == null
+    assign show_view_all = false
+  endif
+  unless view_all_button_style
+    assign view_all_button_style = section.settings.view_all_button_style
+  endunless
+  unless view_all_button_link
+    assign view_all_button_link = '#'
+  endunless
+%}
+<link rel="stylesheet" type="text/css" href="{{ 'smi-swiper-bundle-v11.min.css' | asset_url }}" media="screen" onload="this.onload=null;this.media='all'"> <script src="{{ 'smi-swiper-bundle-v11.min.js' | asset_url }}" defer data-id="smi-swiper-bundle-v11.min.js" data-section-id="smi-{{ section.id }}"></script> <link rel="stylesheet" type="text/css" href="{{ 'smi-layout-slider.min.css' | asset_url }}" media="screen" onload="this.onload=null;this.media='all'">
+<script src="{{ 'smi-slider-2.min.js' | asset_url }}" defer data-id="smi-slider-2.min.js" data-section-id="smi-{{ section.id }}"></script>
+{% liquid
+  if enable_spacing_between_items == false
+    assign space_between_mobile = '0px'
+    assign space_between_desktop = '0px'
+  else
+    assign space_between_mobile = 'var(--grid-mobile-horizontal-spacing)'
+    assign space_between_desktop = 'var(--grid-desktop-horizontal-spacing)'
+  endif
+  assign slides_per_view_desktop = number_of_columns_on_desktop | at_least: 1
+  assign slides_per_view_laptop = slides_per_view_laptop | default: 3 | at_most: slides_per_view_desktop
+  assign slides_per_view_tablet = slides_per_view_tablet | default: 2 | at_most: slides_per_view_desktop
+  assign slides_per_view_mobile = number_of_columns_on_mobile | at_least: 1
+  if object_length <= slides_per_view_mobile
+    assign offset_swiper_mobile = '0px'
+  else
+    if enable_spacing_between_items == false
+      assign offset_swiper_mobile = '(30px + var(--media-border-width))'
+    else
+      assign offset_swiper_mobile = '30px'
+    endif
+  endif
+  assign number_of_loop = 0
+  comment
+    Center if item is less than the number of columns in settings
+  endcomment
+  if object_length < number_of_columns_on_mobile
+    assign flex_justify_content = ' smi-justify-content-center'
+  elsif object_length < 3 and object_length < number_of_columns_on_desktop
+    assign flex_justify_content = ' smi-justify-content-lg-center'
+  elsif object_length < number_of_columns_on_desktop
+    assign flex_justify_content = ' smi-justify-content-xl-center'
+  endif
+%}
+{% liquid
+  assign item_mobile = slides_per_view_mobile
+  assign item_tablet = slides_per_view_tablet
+  assign item_desktop = slides_per_view_desktop
+%}
+{% liquid
+    unless image_width
+        assign image_width = 1600
+    endunless
+    unless sizes
+        assign percent_item_mobile = 100 | divided_by: item_mobile | default: 100
+        assign percent_item_tablet = 100 | divided_by: item_tablet | default: 100
+        assign percent_item_desktop = 100 | divided_by: item_desktop | default: 100
+        assign sizes = '(max-width: 767px)' | append: percent_item_mobile | append: 'vw, (max-width: 991px) ' | append: percent_item_tablet | append: 'vw, ' | append: percent_item_desktop | append: 'vw'
+    endunless
+%} 
+<style>
+  #shopify-section-{{ section.id }} {{ slider_wrapper }} {
+      --space-between-mobile : {{ space_between_mobile }};
+      --space-between-desktop : {{ space_between_desktop }};
+      --item-width-xs: calc((100% - (({{ slides_per_view_mobile | minus: 1 }} * var(--space-between-mobile)) + var(--offset-swiper-mobile,{{ offset_swiper_mobile }})))/{{ slides_per_view_mobile }});
+      --item-width-md: calc((100% - ({{ slides_per_view_tablet | minus: 1 }} * var(--space-between-desktop)))/{{ slides_per_view_tablet }});
+      --item-width-lg: calc((100% - ({{ slides_per_view_laptop | minus: 1 }} * var(--space-between-desktop)))/{{ slides_per_view_laptop }});
+      --item-width-xl: calc((100% - ({{ slides_per_view_desktop | minus: 1 }} * var(--space-between-desktop)))/{{ slides_per_view_desktop }});
+  }
+</style>
+<div
+  class="
+    {{- 'smi-layout-slider smi-position-relative' -}}
+    {%- if slider_overflow == true %} smi-slider-overflow{% else %} smi-slider-not-overflow{% endif -%}
+    {%- liquid
+      echo border_classes | default: ' smi-media-wrapper'
+      if enable_spacing_between_items == false
+        echo ' smi-border-radius-0'
+        if show_border == false
+          echo ' smi-gap-0--standard'
+        else
+          echo ' smi-gap-0'
+        endif
+      else
+        echo ' smi-gap-1'
+      endif
+      if slides_per_view_desktop == 1
+        echo ' smi-content-max-width-800'
+      endif
+  -%}
+  "
+>
+  <div
+    class="smi-swiper"
+    {%- if auto_rotate_slides == true %}
+      data-swiper-autoplay--delay="{{- change_slides_every | default: 5 | times: 1000 -}}"
+    {% endif -%}
+	{% if custom_data_swiper %}
+		{{ custom_data_swiper }}
+	{% endif %}
+  >
+    <div class="smi-swiper-wrapper {{ flex_justify_content }}">
+      {% for item in object_loop limit: object_length %}
+        {% liquid
+          if exclude contains item.type
+            continue
+          endif
+          assign number_of_loop = number_of_loop | plus: 1
+        %}
+        <div
+          class="
+            {%- liquid
+              echo 'smi-swiper-slide'
+              if show_border != false
+                echo ' smi-border'
+                if enable_spacing_between_items != false
+                  echo ' smi-shadow'
+                endif
+              endif
+            -%}
+          "
+          data-swiper-slide-index="{{ forloop.index0 }}"
+          {{ item.shopify_attributes }}
+        >
+          {%-liquid
+    assign heading = item.settings.heading | strip
+    assign description = item.settings.description | strip
+    assign author = item.settings.author_name | strip
+    assign author_info = item.settings.author_info | strip
+    assign author_shape = item.settings.author_shape
+    assign color_scheme = section.settings.content_color_scheme | replace: "-", "_"
+-%}
+<div class="smi-item smi-h-100 smi-py-xl smi-px-lg smi-gradient smi-color-{{- color_scheme -}}">
+    <div class="smi-d-inline-flex smi-column-gap-md smi-mb-lg smi-align-items-center smi-item__author">
+        {%- if author_shape != 'none' -%}
+            <div class="{%- if author_shape == "round" or author_shape == "default" -%}smi-media-wrapper smi-border{%- else %} smi-blob-wrapper {%- endif %} smi-overflow-hidden smi-lh-0 smi-author-image smi-p-relative smi-{{- author_shape -}}">
+                {%- if images[item.settings.author_image] != blank -%}
+                    {{- images[item.settings.author_image] | image_url: width: 150 | image_tag: loading: 'lazy' -}}
+                {%- else -%}
+                    {{- 'image' | placeholder_svg_tag: 'smi-placeholder-light' -}}
+                {%- endif -%}
+            </div>
+        {%- endif -%}
+        <div class="smi-author-info {% if author_shape != 'none' %} smi-text-align-left{% endif %}">
+            {%- if author != '' -%}
+                <h3 class="smi-h5 smi-color-text smi-author-info__name">{{- author -}}</h3>
+            {%- endif -%}
+            {%- if author_info != '' -%}
+                <p class="smi-text-md smi-color-text-75 smi-author-info__username">{{- author_info -}}</p>
+            {%- endif -%}
+        </div>
+    </div>
+    {%- if heading != '' -%}
+        <h4 class="{{- item.settings.heading_size }} smi-mb-xs smi-item__title smi-color-text">{{- heading -}}</h4>
+    {%- endif -%}
+    {%- if description != '' -%}
+        <div class="smi-text-md smi-color-text-75 smi-mb-0 smi-item__description">{{- description -}}</div>
+    {%- endif -%}
+</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="smi-slider-controls">
+    {% if show_navigation != false %}
+      {% liquid
+  unless st_navigation
+    assign st_navigation = section.settings.arrow_style
+  endunless
+%}
+{% if st_navigation != 'none' %}
+  {% liquid
+    case st_navigation
+      when 'arr-style-2' or 'arr-square-style-4' or 'arr-square-style-5' or 'arr-square-style-6' or 'arr-circle-style-4' or 'arr-circle-style-5' or 'arr-rounded-rectangle-bg' or 'arr-rounded-rectangle'
+        capture st_navigation_left
+          render 'smi-icons', icon: 'arrow-left-2'
+        endcapture
+      else
+        capture st_navigation_left
+          render 'smi-icons', icon: 'arrow-left'
+        endcapture
+    endcase
+  %}
+  <div class="smi-component-arrow-slider">
+    <div class="arrow-slider-content">
+      <div class="{{ st_navigation }} arrow-icon arrow-slider-left smi-cursor-pointer" smind-key="arrow_style" smind-attributes smind-attr-arrow>
+        {{ st_navigation_left }}
+      </div>
+      <div class="{{ st_navigation }} arrow-icon arrow-icon--flip arrow-slider-right smi-cursor-pointer" smind-key="arrow_style" smind-attributes smind-attr-arrow>
+            {{ st_navigation_left }}
+      </div>
+    </div>
+  </div>
+{% endif %}
+    {% endif %}
+    {%- liquid
+	if st_pagination == null
+		assign st_pagination = section.settings.sticky_page_dot_style
+	endif
+-%}
+{% if st_pagination != 'none' %}
+	{%- liquid
+		assign pagination_style = 'default'
+		if st_pagination contains 'text-style'
+			assign pagination_style = 'fraction'
+		elsif st_pagination == 'dynamic'
+			assign pagination_style = 'dynamic'
+		elsif st_pagination == 'scrollbar'
+			assign pagination_style = 'scrollbar'
+		endif
+	-%}
+	<div class="smi-slider-dot-container smi-pt-xl smi-w-100" data-pagination="{{ pagination_style }}">
+		{%- if st_pagination contains 'text-style' -%}
+			<div class="smi-component-sticky-page-dot">
+				<div class="smi-slider-action">
+					<div class="smi-arrows {{ st_pagination }}" smind-key="sticky_page_dot_style,pagination_alignment" smind-attributes smind-attr-pagination>
+						<div data-control="textPrevSlide" class="smi-arrow dot-arrow-slider smi-text-sm">
+							{% render 'smi-icons', icon: 'arrow-left' %}
+						</div>
+						<div class="text-pagination smi-pagination smi-slider-pagination smi-text-sm smi-arrow"></div>
+						<div data-control="textNextSlide" class="smi-arrow dot-arrow-slider smi-text-sm">
+							{% render 'smi-icons', icon: 'arrow-right' %}
+						</div>
+					</div>
+				</div>
+			</div>
+		{%- elsif st_pagination == 'scrollbar' -%}
+			<div class="smi-swiper-scrollbar" smind-key="sticky_page_dot_style,pagination_alignment" smind-attributes smind-attr-pagination></div>
+		{%- elsif st_pagination == 'dynamic' -%}
+			<div class="smi-pagination" smind-key="sticky_page_dot_style,pagination_alignment" smind-attributes smind-attr-pagination></div>
+		{%- else -%}
+			<div class="dot-container {{ st_pagination }}">
+				<div
+					class="smi-swiper-pagination smi-pagination"
+					{% if st_pagination == 'dot-style-4' %}
+						style="display: flex;"
+					{% endif %}
+					smind-key="sticky_page_dot_style,pagination_alignment" smind-attributes smind-attr-pagination
+				></div>
+			</div>
+		{%- endif -%}
+	</div>
+{% endif %}
+  </div>
+</div>
+{%- if show_view_all != false and view_all_button_style != 'none' and number_of_loop > 0 -%}
+    <div class="smi-button-wrapper smi-view-all smi-mt-xl smi-d-flex smi-justify-content-center">
+      <a
+        href="{{- view_all_button_link -}}"
+        class="smi-button smi-button--{{- view_all_button_style | split: '_' | first }} smi-text-button {% if view_all_button_style contains "text" %} {% else %}smi-border smi-shadow{% endif %}{{- settings.smi_animations_hover_elements | default: shop.metafields.smind.settings.value.buttonHoverEffect | default: 'none' | prepend: ' smi-hover-' }}" smind-key="button_style" smind-attributes smind-attr-button
+      >
+        <span>{{ 'smind.general.view_all' | t }}</span>
+        {% if view_all_button_style contains 'arrow' %}{% render 'smi-icons', icon: 'arrow-right-2' %}{% endif %}
+      </a>
+    </div>
+  {%- endif -%}
+{% if no_js != true %}
+  <script type="text/javascript">
+    window.smind?.initializeWhenReady(() => {
+      const containerEl = document.getElementById('smi-{{ section.id }}');
+      const layoutSlider = new SMI_LayoutSlider(containerEl);
+      layoutSlider.sliderInit();
+    }, ['SMI_LayoutSlider']);
+  </script>
+{% endif %}
+    </div>
+</div>{%comment%}#includeFile#assets/smi-swiper-bundle-v11.min.css,assets/smi-swiper-bundle-v11.min.js,assets/smi-layout-slider.min.css,assets/smi-slider-2.min.js#endIncludeFile#{%endcomment%}
+
+
